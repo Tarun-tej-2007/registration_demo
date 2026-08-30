@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#8eb3b2" />
+  <title>BRAINSTORM — CLAIM Group 3 | Registration</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="page-shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">C3</div>
+        <div>
+          <span>CLAIM</span>
+          <strong>BRAINSTORM</strong>
+        </div>
+      </div>
+      <a class="nav-btn" href="#register">Register Now <span>↗</span></a>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">CLAIM • GROUP 3</p>
+          <h1>Think.<br><span>Solve.</span><br>Conquer.</h1>
+          <p class="hero-text">
+            A competitive MCQ challenge focused on aptitude, analytical thinking
+            and reasoning. Bring your logic, speed and problem-solving skills.
+          </p>
+
+          <div class="hero-actions">
+            <a class="primary-btn" href="#register">Secure My Seat <span>→</span></a>
+            <a class="text-btn" href="#details">View Event Details</a>
+          </div>
+
+          <div class="quick-stats">
+            <div>
+              <small>DATE</small>
+              <b>19 SEPT 2026</b>
+            </div>
+            <div>
+              <small>VENUE</small>
+              <b>9312 A &amp; B</b>
+            </div>
+            <div>
+              <small>FEE</small>
+              <b>₹100</b>
+            </div>
+          </div>
+        </div>
+
+        <div class="poster-wrap">
+          <div class="poster-glow"></div>
+          <img src="event-poster.png" alt="CLAIM Group 3 Brainstorm event poster" class="poster" />
+        </div>
+      </section>
+
+      <section id="details" class="details-section">
+        <div class="section-heading">
+          <p class="eyebrow">EVENT DETAILS</p>
+          <h2>Everything you need to know.</h2>
+        </div>
+
+        <div class="detail-grid">
+          <article class="detail-card">
+            <span class="icon">◷</span>
+            <h3>Choose your slot</h3>
+            <p><strong>Slot 1:</strong> 9:00 AM – 12:00 PM</p>
+            <p><strong>Slot 2:</strong> 2:00 PM – 5:00 PM</p>
+          </article>
+          <article class="detail-card">
+            <span class="icon">◎</span>
+            <h3>MCQ Challenge</h3>
+            <p>Aptitude</p>
+            <p>Analytical Reasoning</p>
+            <p>Logical Reasoning</p>
+          </article>
+          <article class="detail-card">
+            <span class="icon">₹</span>
+            <h3>Registration</h3>
+            <p class="price">₹100<span>/participant</span></p>
+            <p>Carry your payment reference / UTR.</p>
+          </article>
+          <article class="detail-card">
+            <span class="icon">⌖</span>
+            <h3>Venue</h3>
+            <p>Room 9312 A &amp; B</p>
+            <p>Kalasalingam Academy of Research and Education</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="register" class="register-section">
+        <div class="form-intro">
+          <p class="eyebrow">REGISTRATION</p>
+          <h2>Claim your spot.</h2>
+          <p>
+            Fill in the details below. Your registration reference will be
+            generated after submission.
+          </p>
+
+          <div class="check-list">
+            <div>✓ Individual registration</div>
+            <div>✓ ₹100 registration fee</div>
+            <div>✓ Select one preferred slot</div>
+            <div>✓ Keep your payment UTR/reference ready</div>
+          </div>
+        </div>
+
+        <form id="registrationForm" class="registration-form" novalidate>
+          <div class="form-row">
+            <label>
+              Full Name
+              <input name="fullName" type="text" placeholder="Enter your full name" required />
+            </label>
+            <label>
+              Email
+              <input name="email" type="email" placeholder="you@example.com" required />
+            </label>
+          </div>
+
+          <div class="form-row">
+            <label>
+              Mobile Number
+              <input name="phone" type="tel" inputmode="numeric" maxlength="10"
+                     pattern="[0-9]{10}" placeholder="10-digit mobile number" required />
+            </label>
+            <label>
+              College / Institution
+              <input name="college" type="text" placeholder="Enter institution name" required />
+            </label>
+          </div>
+
+          <div class="form-row">
+            <label>
+              Department
+              <input name="department" type="text" placeholder="e.g. CSE" required />
+            </label>
+            <label>
+              Year
+              <select name="year" required>
+                <option value="">Select year</option>
+                <option>1st Year</option>
+                <option>2nd Year</option>
+                <option>3rd Year</option>
+                <option>4th Year</option>
+                <option>Other</option>
+              </select>
+            </label>
+          </div>
+
+          <fieldset>
+            <legend>Preferred Slot</legend>
+            <div class="slot-options">
+              <label class="slot-card">
+                <input type="radio" name="slot" value="Slot 1 — 9 AM to 12 PM" required />
+                <span><b>Slot 1</b><small>9:00 AM – 12:00 PM</small></span>
+              </label>
+              <label class="slot-card">
+                <input type="radio" name="slot" value="Slot 2 — 2 PM to 5 PM" required />
+                <span><b>Slot 2</b><small>2:00 PM – 5:00 PM</small></span>
+              </label>
+            </div>
+          </fieldset>
+
+          <label>
+            Payment UTR / Transaction Reference
+            <input name="paymentRef" type="text" placeholder="Enter UTR or transaction reference" required />
+            <small class="field-note">Registration fee: ₹100</small>
+          </label>
+
+          <label class="consent">
+            <input name="consent" type="checkbox" required />
+            <span>I confirm that the information provided is correct and I will attend the selected slot.</span>
+          </label>
+
+          <button class="submit-btn" type="submit">
+            <span>Complete Registration</span><span>→</span>
+          </button>
+
+          <p class="form-note">
+            Demo mode is enabled until you connect the supplied Google Apps Script endpoint.
+          </p>
+        </form>
+      </section>
+
+      <section class="success-panel" id="successPanel" hidden>
+        <div class="success-card">
+          <div class="success-icon">✓</div>
+          <p class="eyebrow">REGISTRATION RECEIVED</p>
+          <h2>You’re on the list.</h2>
+          <p>Your registration reference is:</p>
+          <div class="reference" id="registrationReference">BS-000000</div>
+          <p class="success-small">
+            Save this reference for event-day verification.
+          </p>
+          <button id="newRegistration" class="secondary-btn">Register Another Participant</button>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div>
+        <strong>KALASALINGAM ACADEMY OF RESEARCH AND EDUCATION</strong>
+        <span>School of Computing • Department of CSE</span>
+      </div>
+      <span>CLAIM • GROUP 3 • BRAINSTORM</span>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
