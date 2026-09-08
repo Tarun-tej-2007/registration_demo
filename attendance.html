@@ -89,27 +89,17 @@
         </div>
       </div>
 
-      <!-- Live Attendance Metrics -->
-      <div class="stats-grid">
+      <!-- Live Attendance Metrics (2 Cards) -->
+      <div class="stats-grid stats-grid-2">
         <div class="stat-card">
           <span class="stat-label">TOTAL ATTENDED</span>
           <div class="stat-value" id="gateAttended">0</div>
           <small class="stat-foot" id="gateTotalRatio">of 0 Registered</small>
         </div>
         <div class="stat-card">
-          <span class="stat-label">SLOT 1 ATTENDED (9-12)</span>
-          <div class="stat-value" id="gateSlot1Attended">0</div>
-          <small class="stat-foot" id="gateSlot1Ratio">Morning Session</small>
-        </div>
-        <div class="stat-card">
-          <span class="stat-label">SLOT 2 ATTENDED (2-5)</span>
-          <div class="stat-value" id="gateSlot2Attended">0</div>
-          <small class="stat-foot" id="gateSlot2Ratio">Afternoon Session</small>
-        </div>
-        <div class="stat-card">
           <span class="stat-label">ATTENDANCE TURNOUT</span>
           <div class="stat-value" id="gateTurnout">0%</div>
-          <small class="stat-foot">Real-Time Turnout</small>
+          <small class="stat-foot">Real-Time Gate Turnout</small>
         </div>
       </div>
 
@@ -141,13 +131,13 @@
           <!-- Manual / USB Barcode Gun Fast Entry -->
           <div class="manual-scan-box">
             <label for="manualScanInput">
-              <strong>Or Enter Registration ID / Use USB Barcode Gun:</strong>
+              <strong>Or Enter Registration Number / Use USB Barcode Gun:</strong>
             </label>
             <form id="manualScanForm" class="manual-scan-form">
               <input
                 type="text"
                 id="manualScanInput"
-                placeholder="e.g. BS-523126 or Scan Barcode..."
+                placeholder="e.g. 9922004567 or Scan Barcode..."
                 autocomplete="off"
                 required
               />
@@ -169,13 +159,11 @@
           <div id="resultCard" class="result-card result-idle">
             <div class="result-icon-large" id="resultIcon">◎</div>
             <h2 id="resultTitle">Ready to Scan</h2>
-            <p id="resultSubtitle" class="result-msg">Scan a ticket QR code or enter Registration ID above.</p>
+            <p id="resultSubtitle" class="result-msg">Scan a ticket QR code or enter Registration Number above.</p>
 
             <div id="participantDetails" class="participant-scan-details" hidden>
               <div class="detail-row"><span>Participant:</span><strong id="resName">--</strong></div>
-              <div class="detail-row"><span>Registration ID:</span><b class="highlight-id" id="resId">--</b></div>
-              <div class="detail-row"><span>Allocated Slot:</span><strong id="resSlot">--</strong></div>
-              <div class="detail-row"><span>College:</span><span id="resCollege">--</span></div>
+              <div class="detail-row"><span>Registration No:</span><b class="highlight-id" id="resId">--</b></div>
               <div class="detail-row"><span>Dept &amp; Year:</span><span id="resDeptYear">--</span></div>
               <div class="detail-row"><span>Payment UTR:</span><code id="resUtr">--</code></div>
               <div class="detail-row"><span>Check-in Time:</span><b id="resTime" style="color: #0aa66d;">--</b></div>
@@ -272,7 +260,6 @@
           showPinError(data.message || 'Incorrect security code. Access denied.');
         }
       } catch (err) {
-        // Fallback local check if server unreachable
         if (pin === '090307') {
           sessionStorage.setItem('attendance_authenticated', 'true');
           unlockPortal();
@@ -289,13 +276,13 @@
       pinErrorMsg.textContent = msg;
       pinErrorMsg.hidden = false;
       securityCard.classList.remove('shake');
-      void securityCard.offsetWidth; // Trigger reflow for animation
+      void securityCard.offsetWidth;
       securityCard.classList.add('shake');
       securityPinInput.value = '';
       securityPinInput.focus();
     }
 
-    // Audio Synthesizer via Web Audio API
+    // Audio Synthesizer
     const AudioContext = window.AudioContext || window.webkitAudioContext;
     let audioCtx = null;
 
@@ -328,20 +315,20 @@
     }
 
     function soundSuccess() {
-      playBeep(880, 'sine', 0.1, 0);       // High A5
-      playBeep(1320, 'sine', 0.18, 0.1);   // High E6
+      playBeep(880, 'sine', 0.1, 0);
+      playBeep(1320, 'sine', 0.18, 0.1);
     }
 
     function soundWarning() {
-      playBeep(440, 'triangle', 0.15, 0);    // A4
-      playBeep(330, 'triangle', 0.25, 0.15); // E4
+      playBeep(440, 'triangle', 0.15, 0);
+      playBeep(330, 'triangle', 0.25, 0.15);
     }
 
     function soundError() {
-      playBeep(180, 'sawtooth', 0.35, 0);    // Low Buzz
+      playBeep(180, 'sawtooth', 0.35, 0);
     }
 
-    // HTML5 QR Code Scanner Engine
+    // Camera Scanner Engine
     let html5QrCode = null;
     let isScanning = false;
     let isProcessingScan = false;
@@ -360,8 +347,6 @@
 
     const resName = document.getElementById('resName');
     const resId = document.getElementById('resId');
-    const resSlot = document.getElementById('resSlot');
-    const resCollege = document.getElementById('resCollege');
     const resDeptYear = document.getElementById('resDeptYear');
     const resUtr = document.getElementById('resUtr');
     const resTime = document.getElementById('resTime');
@@ -371,11 +356,8 @@
     const recentFeedList = document.getElementById('recentFeedList');
     const refreshFeedBtn = document.getElementById('refreshFeedBtn');
 
-    // Attendance stats elements
     const gateAttended = document.getElementById('gateAttended');
     const gateTotalRatio = document.getElementById('gateTotalRatio');
-    const gateSlot1Attended = document.getElementById('gateSlot1Attended');
-    const gateSlot2Attended = document.getElementById('gateSlot2Attended');
     const gateTurnout = document.getElementById('gateTurnout');
 
     async function initCameraList() {
@@ -463,9 +445,7 @@
       processAttendanceScan(decodedText);
     }
 
-    function onScanError(errorMessage) {
-      // Ignore continuous search frame noise
-    }
+    function onScanError(errorMessage) {}
 
     // Process Attendance Check-in API
     async function processAttendanceScan(rawId) {
@@ -518,8 +498,6 @@
 
       resName.textContent = reg.fullName;
       resId.textContent = reg.registrationId;
-      resSlot.textContent = reg.slot;
-      resCollege.textContent = reg.college;
       resDeptYear.textContent = `${reg.department} • ${reg.year}`;
       resUtr.textContent = reg.paymentRef;
       resTime.textContent = new Date(attendedAt).toLocaleTimeString('en-IN', {
@@ -541,8 +519,6 @@
       if (reg) {
         resName.textContent = reg.fullName;
         resId.textContent = reg.registrationId;
-        resSlot.textContent = reg.slot;
-        resCollege.textContent = reg.college;
         resDeptYear.textContent = `${reg.department} • ${reg.year}`;
         resUtr.textContent = reg.paymentRef;
         resTime.textContent = timeStr;
@@ -579,10 +555,6 @@
           const s = data.stats;
           gateAttended.textContent = s.attended;
           gateTotalRatio.textContent = `of ${s.total} Registered Participants`;
-          gateSlot1Attended.textContent = s.slot1Attended;
-          gateSlot1Ratio.textContent = `of ${s.slot1} in Morning`;
-          gateSlot2Attended.textContent = s.slot2Attended;
-          gateSlot2Ratio.textContent = `of ${s.slot2} in Afternoon`;
           gateTurnout.textContent = `${s.attendancePercentage}%`;
         }
       } catch (err) {
@@ -605,7 +577,6 @@
             const time = new Date(r.attendedAt).toLocaleTimeString('en-IN', {
               hour: '2-digit', minute: '2-digit'
             });
-            const isSlot1 = r.slot.includes('Slot 1');
 
             return `
               <div class="feed-item">
@@ -613,11 +584,8 @@
                 <div class="feed-info">
                   <strong>${r.fullName}</strong>
                   <div class="feed-meta">
-                    <code>${r.registrationId}</code> • ${r.college}
+                    <code>${r.registrationId}</code> • ${r.department}
                   </div>
-                </div>
-                <div class="feed-slot">
-                  <span class="slot-pill ${isSlot1 ? 'badge-slot1' : 'badge-slot2'}">${isSlot1 ? 'Slot 1' : 'Slot 2'}</span>
                 </div>
               </div>
             `;
@@ -640,6 +608,7 @@
       initCameraList();
       loadGateStats();
       loadRecentCheckins();
+      manualScanInput.focus();
     });
   </script>
 </body>

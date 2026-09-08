@@ -81,13 +81,7 @@
           <h2>Everything you need to know.</h2>
         </div>
 
-        <div class="detail-grid">
-          <article class="detail-card">
-            <span class="icon">◷</span>
-            <h3>Choose your slot</h3>
-            <p><strong>Slot 1:</strong> 9:00 AM – 12:00 PM</p>
-            <p><strong>Slot 2:</strong> 2:00 PM – 5:00 PM</p>
-          </article>
+        <div class="detail-grid detail-grid-3">
           <article class="detail-card">
             <span class="icon">◎</span>
             <h3>MCQ Challenge</h3>
@@ -105,7 +99,7 @@
             <span class="icon">⌖</span>
             <h3>Venue</h3>
             <p>Room 9312 A &amp; B</p>
-            <p>Kalasalingam Academy of Research and Education</p>
+            <p>School of Computing</p>
           </article>
         </div>
       </section>
@@ -115,15 +109,13 @@
           <p class="eyebrow">REGISTRATION</p>
           <h2>Claim your spot.</h2>
           <p>
-            Fill in the details below. Your official registration ID will be
-            generated and recorded directly to the database upon submission.
+            Fill in your details below. Your registration number will be used to generate your official ticket pass and gate barcode.
           </p>
 
           <div class="check-list">
             <div>✓ Individual registration</div>
             <div>✓ ₹100 registration fee</div>
-            <div>✓ Select one preferred slot</div>
-            <div>✓ Verified instant confirmation</div>
+            <div>✓ Verified instant confirmation pass</div>
           </div>
 
           <div class="info-box">
@@ -161,16 +153,9 @@
 
           <div class="form-row">
             <label>
-              College / Institution *
-              <input name="college" type="text" placeholder="e.g. Kalasalingam Academy" required />
-            </label>
-            <label>
               Department *
               <input name="department" type="text" placeholder="e.g. CSE, IT, ECE" required />
             </label>
-          </div>
-
-          <div class="form-row">
             <label>
               Year of Study *
               <select name="year" required>
@@ -184,20 +169,6 @@
             </label>
           </div>
 
-          <fieldset>
-            <legend>Preferred Slot *</legend>
-            <div class="slot-options">
-              <label class="slot-card">
-                <input type="radio" name="slot" value="Slot 1 — 9 AM to 12 PM" required />
-                <span><b>Slot 1</b><small>9:00 AM – 12:00 PM</small></span>
-              </label>
-              <label class="slot-card">
-                <input type="radio" name="slot" value="Slot 2 — 2 PM to 5 PM" required />
-                <span><b>Slot 2</b><small>2:00 PM – 5:00 PM</small></span>
-              </label>
-            </div>
-          </fieldset>
-
           <label>
             Payment UTR / Transaction Reference *
             <input name="paymentRef" type="text" placeholder="Enter 12-digit UTR or Transaction ID" required />
@@ -206,7 +177,7 @@
 
           <label class="consent">
             <input name="consent" type="checkbox" required />
-            <span>I confirm that the information provided is accurate and I will attend the event during my selected slot.</span>
+            <span>I confirm that the information provided is accurate and I will attend the event.</span>
           </label>
 
           <button id="submitBtn" class="submit-btn" type="submit">
@@ -225,13 +196,12 @@
           <div class="success-icon">✓</div>
           <p class="eyebrow">REGISTRATION CONFIRMED &amp; SAVED</p>
           <h2>You’re in! See you at BRAINSTORM.</h2>
-          <p>Your official registration reference ID is:</p>
-          <div class="reference" id="registrationReference">BS-000000</div>
+          <p>Your official registration reference number is:</p>
+          <div class="reference" id="registrationReference">0000000000</div>
 
           <div class="ticket-preview" id="ticketPreview">
             <div class="ticket-row"><span>Participant:</span><strong id="ticketName">--</strong></div>
             <div class="ticket-row"><span>Email:</span><strong id="ticketEmail">--</strong></div>
-            <div class="ticket-row"><span>Slot:</span><strong id="ticketSlot">--</strong></div>
             <div class="ticket-row"><span>Venue:</span><strong>Room 9312 A &amp; B</strong></div>
             <div class="ticket-row"><span>Payment UTR:</span><strong id="ticketUtr">--</strong></div>
           </div>

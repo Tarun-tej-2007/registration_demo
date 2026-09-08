@@ -3,7 +3,7 @@ const router = express.Router();
 const mongoose = require('mongoose');
 const Registration = require('../models/Registration');
 
-// Generate unique registration ID: BS-XXXXXX
+// Generate unique registration ID: BS-XXXXXX (fallback)
 async function generateUniqueRegistrationId() {
   let unique = false;
   let regId = '';
@@ -22,9 +22,9 @@ async function generateUniqueRegistrationId() {
 // @desc    Create a new participant registration
 router.post('/register', async (req, res) => {
   try {
-    const { registrationNumber, fullName, email, phone, college, department, year, slot, paymentRef } = req.body;
+    const { registrationNumber, fullName, email, phone, department, year, paymentRef } = req.body;
 
-    if (!fullName || !email || !phone || !college || !department || !year || !slot || !paymentRef) {
+    if (!fullName || !email || !phone || !department || !year || !paymentRef) {
       return res.status(400).json({
         success: false,
         message: 'All fields are required. Please fill in every detail.'
@@ -81,10 +81,8 @@ router.post('/register', async (req, res) => {
       fullName: fullName.trim(),
       email: cleanEmail,
       phone: cleanPhone,
-      college: college.trim(),
       department: department.trim(),
       year: year.trim(),
-      slot: slot.trim(),
       paymentRef: cleanPaymentRef,
       fee: 100,
       status: 'confirmed'
@@ -224,15 +222,11 @@ router.get('/attendance/recent', async (req, res) => {
 });
 
 // @route   GET /api/registrations
-// @desc    Get all registrations with search, filter, and pagination support
+// @desc    Get all registrations with search, filter, and sorting
 router.get('/registrations', async (req, res) => {
   try {
-    const { search, slot, year, status, sort = 'desc' } = req.query;
+    const { search, year, status, sort = 'desc' } = req.query;
     let query = {};
-
-    if (slot && slot !== 'all') {
-      query.slot = { $regex: slot, $options: 'i' };
-    }
 
     if (year && year !== 'all') {
       query.year = year;
@@ -249,7 +243,6 @@ router.get('/registrations', async (req, res) => {
         { fullName: { $regex: s, $options: 'i' } },
         { email: { $regex: s, $options: 'i' } },
         { phone: { $regex: s, $options: 'i' } },
-        { college: { $regex: s, $options: 'i' } },
         { department: { $regex: s, $options: 'i' } },
         { paymentRef: { $regex: s, $options: 'i' } }
       ];
@@ -307,25 +300,17 @@ router.get('/registration/:id', async (req, res) => {
 });
 
 // @route   GET /api/stats
-// @desc    Get event stats summary (counts, slots, revenue, attended)
+// @desc    Get event stats summary
 router.get('/stats', async (req, res) => {
   try {
     const total = await Registration.countDocuments();
-    const slot1 = await Registration.countDocuments({ slot: { $regex: 'Slot 1', $options: 'i' } });
-    const slot2 = await Registration.countDocuments({ slot: { $regex: 'Slot 2', $options: 'i' } });
     const attended = await Registration.countDocuments({ status: 'attended' });
-    const slot1Attended = await Registration.countDocuments({ slot: { $regex: 'Slot 1', $options: 'i' }, status: 'attended' });
-    const slot2Attended = await Registration.countDocuments({ slot: { $regex: 'Slot 2', $options: 'i' }, status: 'attended' });
 
     return res.json({
       success: true,
       stats: {
         total,
-        slot1,
-        slot2,
         attended,
-        slot1Attended,
-        slot2Attended,
         attendancePercentage: total > 0 ? Math.round((attended / total) * 100) : 0,
         totalRevenue: total * 100,
         currency: '₹'
@@ -347,14 +332,12 @@ router.get('/export', async (req, res) => {
     const registrations = await Registration.find().sort({ createdAt: -1 });
 
     const headers = [
-      'Registration ID',
+      'Registration Number',
       'Full Name',
       'Email',
       'Phone',
-      'College',
       'Department',
       'Year',
-      'Slot',
       'Payment Reference',
       'Fee (INR)',
       'Status',
@@ -373,10 +356,8 @@ router.get('/export', async (req, res) => {
       escapeCsv(r.fullName),
       escapeCsv(r.email),
       escapeCsv(r.phone),
-      escapeCsv(r.college),
       escapeCsv(r.department),
       escapeCsv(r.year),
-      escapeCsv(r.slot),
       escapeCsv(r.paymentRef),
       escapeCsv(r.fee),
       escapeCsv(r.status),

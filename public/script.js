@@ -13,7 +13,6 @@ const liveStatusText = document.getElementById("liveStatusText");
 
 const ticketName = document.getElementById("ticketName");
 const ticketEmail = document.getElementById("ticketEmail");
-const ticketSlot = document.getElementById("ticketSlot");
 const ticketUtr = document.getElementById("ticketUtr");
 
 // Helper to show alert in form
@@ -106,7 +105,6 @@ form.addEventListener("submit", async (event) => {
 
     if (ticketName) ticketName.textContent = reg.fullName;
     if (ticketEmail) ticketEmail.textContent = reg.email;
-    if (ticketSlot) ticketSlot.textContent = reg.slot;
     if (ticketUtr) ticketUtr.textContent = reg.paymentRef;
 
     const ticketQrImage = document.getElementById("ticketQrImage");

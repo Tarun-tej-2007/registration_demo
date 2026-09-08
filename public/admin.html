@@ -92,8 +92,8 @@
         </div>
       </div>
 
-      <!-- Stats Grid -->
-      <div class="stats-grid stats-grid-5">
+      <!-- Stats Grid (3 Cards) -->
+      <div class="stats-grid stats-grid-3">
         <div class="stat-card">
           <span class="stat-label">TOTAL REGISTERED</span>
           <div class="stat-value" id="statTotal">--</div>
@@ -103,16 +103,6 @@
           <span class="stat-label">ATTENDED (CHECKED IN)</span>
           <div class="stat-value" style="color: #0aa66d;" id="statAttended">0</div>
           <small class="stat-foot" id="statTurnoutPct">0% Turnout</small>
-        </div>
-        <div class="stat-card">
-          <span class="stat-label">SLOT 1 (9 AM – 12 PM)</span>
-          <div class="stat-value" id="statSlot1">--</div>
-          <small class="stat-foot" id="statSlot1AttendedFoot">-- attended</small>
-        </div>
-        <div class="stat-card">
-          <span class="stat-label">SLOT 2 (2 PM – 5 PM)</span>
-          <div class="stat-value" id="statSlot2">--</div>
-          <small class="stat-foot" id="statSlot2AttendedFoot">-- attended</small>
         </div>
         <div class="stat-card">
           <span class="stat-label">TOTAL COLLECTION</span>
@@ -127,7 +117,7 @@
           <input
             type="text"
             id="searchInput"
-            placeholder="Search by ID, Name, Email, Phone, College, or UTR..."
+            placeholder="Search by Registration No, Name, Email, Phone, Dept, or UTR..."
           />
         </div>
         <div class="filter-controls">
@@ -135,11 +125,6 @@
             <option value="all">All Statuses</option>
             <option value="attended">Attended ✓</option>
             <option value="confirmed">Confirmed (Not Checked In)</option>
-          </select>
-          <select id="filterSlot">
-            <option value="all">All Slots</option>
-            <option value="Slot 1">Slot 1 (Morning)</option>
-            <option value="Slot 2">Slot 2 (Afternoon)</option>
           </select>
           <select id="filterYear">
             <option value="all">All Years</option>
@@ -163,11 +148,10 @@
         <table class="data-table" id="registrationsTable">
           <thead>
             <tr>
-              <th>ID</th>
+              <th>Reg No. / ID</th>
               <th>Participant</th>
               <th>Contact Info</th>
-              <th>Institution / Dept</th>
-              <th>Slot</th>
+              <th>Department</th>
               <th>Payment UTR</th>
               <th>Attendance</th>
               <th>Actions</th>
@@ -284,16 +268,11 @@
     const statTotal = document.getElementById('statTotal');
     const statAttended = document.getElementById('statAttended');
     const statTurnoutPct = document.getElementById('statTurnoutPct');
-    const statSlot1 = document.getElementById('statSlot1');
-    const statSlot1AttendedFoot = document.getElementById('statSlot1AttendedFoot');
-    const statSlot2 = document.getElementById('statSlot2');
-    const statSlot2AttendedFoot = document.getElementById('statSlot2AttendedFoot');
     const statRevenue = document.getElementById('statRevenue');
     const dbStatusPill = document.getElementById('dbStatusPill');
 
     const searchInput = document.getElementById('searchInput');
     const filterStatus = document.getElementById('filterStatus');
-    const filterSlot = document.getElementById('filterSlot');
     const filterYear = document.getElementById('filterYear');
     const sortOrder = document.getElementById('sortOrder');
     const refreshBtn = document.getElementById('refreshBtn');
@@ -328,10 +307,6 @@
           statTotal.textContent = s.total;
           statAttended.textContent = s.attended;
           statTurnoutPct.textContent = `${s.attendancePercentage}% Turnout`;
-          statSlot1.textContent = s.slot1;
-          statSlot1AttendedFoot.textContent = `${s.slot1Attended} attended`;
-          statSlot2.textContent = s.slot2;
-          statSlot2AttendedFoot.textContent = `${s.slot2Attended} attended`;
           statRevenue.textContent = `₹${s.totalRevenue.toLocaleString('en-IN')}`;
         }
       } catch (err) {
@@ -344,14 +319,12 @@
       noResults.hidden = true;
       try {
         const status = filterStatus.value;
-        const slot = filterSlot.value;
         const year = filterYear.value;
         const search = searchInput.value.trim();
         const sort = sortOrder.value;
 
         const params = new URLSearchParams();
         if (status !== 'all') params.append('status', status);
-        if (slot !== 'all') params.append('slot', slot);
         if (year !== 'all') params.append('year', year);
         if (search) params.append('search', search);
         if (sort) params.append('sort', sort);
@@ -365,7 +338,7 @@
         }
       } catch (err) {
         console.error('Error fetching registrations:', err);
-        tableBody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:30px; color:#ff5555;">Failed to load data from server.</td></tr>`;
+        tableBody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:30px; color:#ff5555;">Failed to load data from server.</td></tr>`;
       } finally {
         tableLoading.hidden = true;
       }
@@ -380,8 +353,6 @@
       noResults.hidden = true;
 
       tableBody.innerHTML = list.map(reg => {
-        const isSlot1 = reg.slot.includes('Slot 1');
-        const slotBadgeClass = isSlot1 ? 'badge-slot1' : 'badge-slot2';
         const isAttended = reg.status === 'attended';
         const formattedDate = new Date(reg.createdAt).toLocaleString('en-IN', {
           day: 'numeric',
@@ -411,11 +382,7 @@
               <div><a href="tel:${escapeHtml(reg.phone)}" class="subtle-link">✆ ${escapeHtml(reg.phone)}</a></div>
             </td>
             <td>
-              <div><strong>${escapeHtml(reg.college)}</strong></div>
-              <div class="row-dept">${escapeHtml(reg.department)}</div>
-            </td>
-            <td>
-              <span class="slot-pill ${slotBadgeClass}">${isSlot1 ? 'Slot 1 (9-12)' : 'Slot 2 (2-5)'}</span>
+              <div><strong>${escapeHtml(reg.department)}</strong></div>
             </td>
             <td>
               <code class="utr-code">${escapeHtml(reg.paymentRef)}</code>
@@ -470,7 +437,6 @@
     });
 
     filterStatus.addEventListener('change', loadRegistrations);
-    filterSlot.addEventListener('change', loadRegistrations);
     filterYear.addEventListener('change', loadRegistrations);
     sortOrder.addEventListener('change', loadRegistrations);
     refreshBtn.addEventListener('click', () => {

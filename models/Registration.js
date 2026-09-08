@@ -33,11 +33,6 @@ const registrationSchema = new mongoose.Schema(
       trim: true,
       match: [/^[0-9]{10}$/, 'Phone number must be a 10-digit number']
     },
-    college: {
-      type: String,
-      required: [true, 'College name is required'],
-      trim: true
-    },
     department: {
       type: String,
       required: [true, 'Department is required'],
@@ -46,11 +41,6 @@ const registrationSchema = new mongoose.Schema(
     year: {
       type: String,
       required: [true, 'Year of study is required'],
-      trim: true
-    },
-    slot: {
-      type: String,
-      required: [true, 'Slot selection is required'],
       trim: true
     },
     paymentRef: {
