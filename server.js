@@ -17,13 +17,36 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));
 
-// Serve static frontend files
-app.use(express.static(path.join(__dirname)));
+// MongoDB Connection helper (compatible with standalone and serverless Vercel)
+async function connectDB() {
+  if (mongoose.connection.readyState >= 1) {
+    return;
+  }
+  if (!MONGODB_URI) {
+    console.warn('⚠️ MONGODB_URI is not defined in environment variables.');
+    return;
+  }
+  try {
+    await mongoose.connect(MONGODB_URI);
+    console.log('✅ Connected to MongoDB Atlas database: brainstorm_registrations');
+  } catch (err) {
+    console.error('❌ MongoDB Connection Error:', err.message);
+  }
+}
+
+// Ensure DB connected before processing API requests
+app.use('/api', async (req, res, next) => {
+  await connectDB();
+  next();
+});
 
 // API Routes
 app.use('/api', apiRoutes);
 
-// Fallback route for SPA / direct HTML file access
+// Serve static frontend files (for standalone local server)
+app.use(express.static(path.join(__dirname)));
+
+// Route mappings for friendly URLs
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
@@ -40,41 +63,20 @@ app.get('/attendance', (req, res) => {
   res.sendFile(path.join(__dirname, 'attendance.html'));
 });
 
-// Database Connection
-if (!MONGODB_URI) {
-  console.error('CRITICAL: MONGODB_URI is not defined in your .env file.');
-  process.exit(1);
-}
-
-console.log('Connecting to MongoDB Atlas...');
-
-mongoose
-  .connect(MONGODB_URI)
-  .then(() => {
-    console.log(' Successfully connected to MongoDB Atlas database: brainstorm_registrations');
-    
-    // Start listening on port
+// Only listen on port if running directly (standalone Node.js environment)
+if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
+  connectDB().then(() => {
     app.listen(PORT, () => {
       console.log(`===================================================`);
       console.log(`🚀 BRAINSTORM Server running at http://localhost:${PORT}`);
       console.log(`🌐 Landing & Registration: http://localhost:${PORT}`);
       console.log(`🔍 Ticket & Status Portal: http://localhost:${PORT}/status.html`);
       console.log(`📊 Admin Dashboard:       http://localhost:${PORT}/admin.html`);
+      console.log(`📷 Attendance Scanner:    http://localhost:${PORT}/attendance.html`);
       console.log(`💓 Health & DB Status:    http://localhost:${PORT}/api/health`);
       console.log(`===================================================`);
     });
-  })
-  .catch((err) => {
-    console.error(' MongoDB Connection Error:', err.message);
-    console.error('Please ensure your IP address is whitelisted in MongoDB Atlas Network Access.');
   });
-
-mongoose.connection.on('disconnected', () => {
-  console.warn('⚠️ MongoDB disconnected.');
-});
-
-mongoose.connection.on('reconnected', () => {
-  console.log(' MongoDB reconnected.');
-});
+}
 
 module.exports = app;
