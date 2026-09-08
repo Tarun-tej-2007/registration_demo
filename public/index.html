@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#8eb3b2" />
+  <title>BRAINSTORM — CLAIM Group 3 | Registration Portal</title>
+  <meta name="description" content="Register for BRAINSTORM — CLAIM Group 3 competitive MCQ challenge on Aptitude, Analytical Thinking & Reasoning at Kalasalingam Academy of Research and Education." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="page-shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">C3</div>
+        <div>
+          <span>CLAIM</span>
+          <strong>BRAINSTORM</strong>
+        </div>
+      </div>
+      <nav class="nav-links">
+        <a class="nav-link-item" href="status.html">🔍 Find My Ticket</a>
+        <a class="nav-btn" href="#register">Register Now <span>↗</span></a>
+      </nav>
+    </header>
+
+    <!-- DB Status Banner -->
+    <div id="liveBanner" class="live-banner">
+      <div class="live-indicator">
+        <span class="live-dot"></span>
+        <span id="liveStatusText">MongoDB Connected &amp; Accepting Registrations</span>
+      </div>
+      <div class="live-count-badge" id="liveStatsBadge">
+        Seats filling fast • <b id="statTotalCount">--</b> Registered
+      </div>
+    </div>
+
+    <main>
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">CLAIM • GROUP 3</p>
+          <h1>Think.<br><span>Solve.</span><br>Conquer.</h1>
+          <p class="hero-text">
+            A competitive MCQ challenge focused on aptitude, analytical thinking
+            and reasoning. Bring your logic, speed and problem-solving skills.
+          </p>
+
+          <div class="hero-actions">
+            <a class="primary-btn" href="#register">Secure My Seat <span>→</span></a>
+            <a class="text-btn" href="#details">View Event Details</a>
+          </div>
+
+          <div class="quick-stats">
+            <div>
+              <small>DATE</small>
+              <b>19 SEPT 2026</b>
+            </div>
+            <div>
+              <small>VENUE</small>
+              <b>9312 A &amp; B</b>
+            </div>
+            <div>
+              <small>FEE</small>
+              <b>₹100</b>
+            </div>
+          </div>
+        </div>
+
+        <div class="poster-wrap">
+          <div class="poster-glow"></div>
+          <img src="event-poster.png" alt="CLAIM Group 3 Brainstorm event poster" class="poster" />
+        </div>
+      </section>
+
+      <section id="details" class="details-section">
+        <div class="section-heading">
+          <p class="eyebrow">EVENT DETAILS</p>
+          <h2>Everything you need to know.</h2>
+        </div>
+
+        <div class="detail-grid">
+          <article class="detail-card">
+            <span class="icon">◷</span>
+            <h3>Choose your slot</h3>
+            <p><strong>Slot 1:</strong> 9:00 AM – 12:00 PM</p>
+            <p><strong>Slot 2:</strong> 2:00 PM – 5:00 PM</p>
+          </article>
+          <article class="detail-card">
+            <span class="icon">◎</span>
+            <h3>MCQ Challenge</h3>
+            <p>Aptitude</p>
+            <p>Analytical Reasoning</p>
+            <p>Logical Reasoning</p>
+          </article>
+          <article class="detail-card">
+            <span class="icon">₹</span>
+            <h3>Registration</h3>
+            <p class="price">₹100<span>/participant</span></p>
+            <p>Carry your payment reference / UTR.</p>
+          </article>
+          <article class="detail-card">
+            <span class="icon">⌖</span>
+            <h3>Venue</h3>
+            <p>Room 9312 A &amp; B</p>
+            <p>Kalasalingam Academy of Research and Education</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="register" class="register-section">
+        <div class="form-intro">
+          <p class="eyebrow">REGISTRATION</p>
+          <h2>Claim your spot.</h2>
+          <p>
+            Fill in the details below. Your official registration ID will be
+            generated and recorded directly to the database upon submission.
+          </p>
+
+          <div class="check-list">
+            <div>✓ Individual registration</div>
+            <div>✓ ₹100 registration fee</div>
+            <div>✓ Select one preferred slot</div>
+            <div>✓ Verified instant confirmation</div>
+          </div>
+
+          <div class="info-box">
+            <strong>Already registered?</strong>
+            <p>You can search and download your event entry pass anytime.</p>
+            <a href="status.html" class="inline-link">Lookup My Registration Ticket →</a>
+          </div>
+        </div>
+
+        <form id="registrationForm" class="registration-form" novalidate>
+          <div id="formAlert" class="form-alert" hidden></div>
+
+          <div class="form-row">
+            <label>
+              Full Name *
+              <input name="fullName" type="text" placeholder="Enter your full name" required />
+            </label>
+            <label>
+              Email Address *
+              <input name="email" type="email" placeholder="you@example.com" required />
+            </label>
+          </div>
+
+          <div class="form-row">
+            <label>
+              Mobile Number (10 Digits) *
+              <input name="phone" type="tel" inputmode="numeric" maxlength="10"
+                     pattern="[0-9]{10}" placeholder="e.g. 9876543210" required />
+            </label>
+            <label>
+              College / Institution *
+              <input name="college" type="text" placeholder="e.g. Kalasalingam Academy" required />
+            </label>
+          </div>
+
+          <div class="form-row">
+            <label>
+              Department *
+              <input name="department" type="text" placeholder="e.g. CSE, IT, ECE" required />
+            </label>
+            <label>
+              Year of Study *
+              <select name="year" required>
+                <option value="">Select year</option>
+                <option value="1st Year">1st Year</option>
+                <option value="2nd Year">2nd Year</option>
+                <option value="3rd Year">3rd Year</option>
+                <option value="4th Year">4th Year</option>
+                <option value="Postgraduate / Other">Postgraduate / Other</option>
+              </select>
+            </label>
+          </div>
+
+          <fieldset>
+            <legend>Preferred Slot *</legend>
+            <div class="slot-options">
+              <label class="slot-card">
+                <input type="radio" name="slot" value="Slot 1 — 9 AM to 12 PM" required />
+                <span><b>Slot 1</b><small>9:00 AM – 12:00 PM</small></span>
+              </label>
+              <label class="slot-card">
+                <input type="radio" name="slot" value="Slot 2 — 2 PM to 5 PM" required />
+                <span><b>Slot 2</b><small>2:00 PM – 5:00 PM</small></span>
+              </label>
+            </div>
+          </fieldset>
+
+          <label>
+            Payment UTR / Transaction Reference *
+            <input name="paymentRef" type="text" placeholder="Enter 12-digit UTR or Transaction ID" required />
+            <small class="field-note">Registration fee: ₹100 • Enter Google Pay / PhonePe / Paytm / Bank UTR</small>
+          </label>
+
+          <label class="consent">
+            <input name="consent" type="checkbox" required />
+            <span>I confirm that the information provided is accurate and I will attend the event during my selected slot.</span>
+          </label>
+
+          <button id="submitBtn" class="submit-btn" type="submit">
+            <span>Complete Registration</span><span>→</span>
+          </button>
+
+          <p class="form-note">
+            🔒 Secured with MongoDB Cloud Database. Instant confirmation generated.
+          </p>
+        </form>
+      </section>
+
+      <!-- Success Section -->
+      <section class="success-panel" id="successPanel" hidden>
+        <div class="success-card">
+          <div class="success-icon">✓</div>
+          <p class="eyebrow">REGISTRATION CONFIRMED &amp; SAVED</p>
+          <h2>You’re in! See you at BRAINSTORM.</h2>
+          <p>Your official registration reference ID is:</p>
+          <div class="reference" id="registrationReference">BS-000000</div>
+
+          <div class="ticket-preview" id="ticketPreview">
+            <div class="ticket-row"><span>Participant:</span><strong id="ticketName">--</strong></div>
+            <div class="ticket-row"><span>Email:</span><strong id="ticketEmail">--</strong></div>
+            <div class="ticket-row"><span>Slot:</span><strong id="ticketSlot">--</strong></div>
+            <div class="ticket-row"><span>Venue:</span><strong>Room 9312 A &amp; B</strong></div>
+            <div class="ticket-row"><span>Payment UTR:</span><strong id="ticketUtr">--</strong></div>
+          </div>
+
+          <div class="qr-wrapper" style="max-width: 140px; margin: 15px auto;">
+            <img id="ticketQrImage" alt="Ticket QR" style="width: 120px; height: 120px; display: block; margin: auto;" />
+          </div>
+
+          <p class="success-small">
+            Please screenshot or save this confirmation. You can also print your pass or look it up anytime with your ID.
+          </p>
+
+          <div class="success-actions">
+            <a id="viewFullPassLink" href="status.html" class="primary-btn" target="_blank">
+              🎟️ View Full Entry Pass →
+            </a>
+            <button id="printPassBtn" class="secondary-btn" onclick="window.print()">
+              🖨️ Print Receipt
+            </button>
+            <button id="newRegistration" class="secondary-btn">
+              + Register Another
+            </button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div>
+        <strong>KALASALINGAM ACADEMY OF RESEARCH AND EDUCATION</strong>
+        <span>School of Computing • Department of CSE</span>
+      </div>
+      <div>
+        <span>CLAIM • GROUP 3 • BRAINSTORM</span>
+        <div class="footer-links">
+          <a href="status.html">Find My Ticket Pass</a>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

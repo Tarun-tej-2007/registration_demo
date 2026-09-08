@@ -44,23 +44,25 @@ app.use('/api', async (req, res, next) => {
 app.use('/api', apiRoutes);
 
 // Serve static frontend files (for standalone local server)
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname)));
 
 // Route mappings for friendly URLs
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
+  const filePath = path.join(__dirname, 'public', 'index.html');
+  res.sendFile(filePath);
 });
 
 app.get('/admin', (req, res) => {
-  res.sendFile(path.join(__dirname, 'admin.html'));
+  res.sendFile(path.join(__dirname, 'public', 'admin.html'));
 });
 
 app.get('/status', (req, res) => {
-  res.sendFile(path.join(__dirname, 'status.html'));
+  res.sendFile(path.join(__dirname, 'public', 'status.html'));
 });
 
 app.get('/attendance', (req, res) => {
-  res.sendFile(path.join(__dirname, 'attendance.html'));
+  res.sendFile(path.join(__dirname, 'public', 'attendance.html'));
 });
 
 // Only listen on port if running directly (standalone Node.js environment)
