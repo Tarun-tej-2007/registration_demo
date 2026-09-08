@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#8eb3b2" />
+  <title>Ticket Verification &amp; Pass | BRAINSTORM</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700;800;900&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+  <!-- QR Code & Barcode Libraries with fallback -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+</head>
+<body class="subpage">
+  <div class="page-shell">
+    <header class="topbar">
+      <div class="brand">
+        <a href="index.html" style="display:flex; gap:12px; align-items:center;">
+          <div class="brand-mark">C3</div>
+          <div>
+            <span>CLAIM</span>
+            <strong>BRAINSTORM</strong>
+          </div>
+        </a>
+      </div>
+      <nav class="nav-links">
+        <a class="nav-link-item" href="index.html">← Back to Home</a>
+        <a class="nav-btn" href="index.html#register">Register Now <span>↗</span></a>
+      </nav>
+    </header>
+
+    <main class="portal-main">
+      <section class="portal-header">
+        <p class="eyebrow">PARTICIPANT VERIFICATION PORTAL</p>
+        <h1>Find Your Entry Pass</h1>
+        <p class="portal-subtitle">
+          Search with your <strong>Registration ID</strong> (e.g. <code>BS-523126</code>), registered <strong>Email</strong>, or <strong>10-digit Mobile Number</strong> to view, download, or print your official event entry pass with scannable gate pass barcode.
+        </p>
+
+        <!-- Search Form -->
+        <div class="lookup-card">
+          <form id="lookupForm" class="lookup-form">
+            <div class="lookup-input-group">
+              <input
+                type="text"
+                id="lookupQuery"
+                placeholder="Enter Registration ID, Email, or Phone..."
+                required
+                autocomplete="off"
+              />
+              <button type="submit" id="lookupBtn" class="primary-btn">
+                <span>Search Pass</span> <span>🔍</span>
+              </button>
+            </div>
+          </form>
+          <div id="lookupMessage" class="lookup-message" hidden></div>
+        </div>
+      </section>
+
+      <!-- Digital Pass Card (hidden until search) -->
+      <section id="passContainer" class="pass-section" hidden>
+        <div class="ticket-pass" id="ticketPass">
+          <div class="ticket-left">
+            <div class="pass-brand">
+              <span class="badge-tag">OFFICIAL EVENT PASS</span>
+              <span class="status-pill status-verified" id="passStatusBadge">CONFIRMED</span>
+            </div>
+            
+            <h2 class="pass-title">BRAINSTORM 2026</h2>
+            <p class="pass-sub">CLAIM Group 3 • Aptitude &amp; Analytical MCQ Challenge</p>
+
+            <div class="pass-grid">
+              <div class="pass-field">
+                <small>PARTICIPANT NAME</small>
+                <b id="passName">--</b>
+              </div>
+              <div class="pass-field">
+                <small>REGISTRATION ID</small>
+                <b class="highlight-id" id="passId">--</b>
+              </div>
+              <div class="pass-field">
+                <small>ALLOCATED SLOT</small>
+                <b id="passSlot">--</b>
+              </div>
+              <div class="pass-field">
+                <small>VENUE &amp; ROOM</small>
+                <b>Room 9312 A &amp; B (School of Computing)</b>
+              </div>
+              <div class="pass-field">
+                <small>INSTITUTION</small>
+                <span id="passCollege">--</span>
+              </div>
+              <div class="pass-field">
+                <small>DEPT &amp; YEAR</small>
+                <span id="passDeptYear">--</span>
+              </div>
+            </div>
+
+            <div class="pass-footer-info">
+              <div>
+                <small>PAYMENT REFERENCE (UTR)</small>
+                <code id="passUtr">--</code>
+              </div>
+              <div>
+                <small>REGISTERED ON</small>
+                <span id="passDate">--</span>
+              </div>
+              <div id="attendedTimestampWrap" hidden>
+                <small>ATTENDANCE RECORDED</small>
+                <b style="color: #0aa66d;" id="passAttendedTime">--</b>
+              </div>
+            </div>
+          </div>
+
+          <div class="ticket-stub">
+            <div class="stub-notch top"></div>
+            <div class="stub-notch bottom"></div>
+            <div class="stub-content">
+              <div class="stub-brand">ENTRY PASS</div>
+              
+              <!-- Real Scannable QR Code -->
+              <div class="qr-wrapper">
+                <div id="ticketQrCode">
+                  <img id="qrImageFallback" alt="Ticket QR Code" style="width: 120px; height: 120px; display: block; margin: auto;" />
+                </div>
+              </div>
+
+              <!-- Real Scannable Barcode -->
+              <div class="barcode-wrapper">
+                <svg id="ticketBarcode"></svg>
+              </div>
+
+              <div class="stub-id" id="stubId">BS-000000</div>
+              <small class="stub-notice">Scan at entrance of 9312 A&amp;B for automated gate check-in</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="pass-actions">
+          <button class="primary-btn" onclick="window.print()">
+            <span>🖨️ Print / Save PDF Pass</span>
+          </button>
+          <button class="secondary-btn" id="searchAgainBtn">
+            <span>Search Another</span>
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div>
+        <strong>KALASALINGAM ACADEMY OF RESEARCH AND EDUCATION</strong>
+        <span>School of Computing • Department of CSE</span>
+      </div>
+      <div>
+        <span>CLAIM • GROUP 3 • BRAINSTORM</span>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    const lookupForm = document.getElementById('lookupForm');
+    const lookupQuery = document.getElementById('lookupQuery');
+    const lookupBtn = document.getElementById('lookupBtn');
+    const lookupMessage = document.getElementById('lookupMessage');
+    const passContainer = document.getElementById('passContainer');
+    const searchAgainBtn = document.getElementById('searchAgainBtn');
+    const qrContainer = document.getElementById('ticketQrCode');
+    const qrImageFallback = document.getElementById('qrImageFallback');
+
+    // Auto lookup from URL param (e.g. ?id=BS-523126)
+    window.addEventListener('DOMContentLoaded', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const queryParam = urlParams.get('id') || urlParams.get('query');
+      if (queryParam) {
+        lookupQuery.value = queryParam;
+        performLookup(queryParam);
+      }
+    });
+
+    lookupForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const query = lookupQuery.value.trim();
+      if (!query) return;
+      await performLookup(query);
+    });
+
+    searchAgainBtn?.addEventListener('click', () => {
+      passContainer.hidden = true;
+      lookupQuery.value = '';
+      lookupQuery.focus();
+      lookupMessage.hidden = true;
+    });
+
+    async function performLookup(query) {
+      lookupBtn.disabled = true;
+      lookupBtn.innerHTML = '<span>Searching…</span> <span>↻</span>';
+      lookupMessage.hidden = true;
+
+      try {
+        const res = await fetch(`/api/registration/${encodeURIComponent(query)}`);
+        const data = await res.json();
+
+        if (!res.ok || !data.success || !data.registration) {
+          lookupMessage.className = 'lookup-message error';
+          lookupMessage.textContent = data.message || 'No registration found. Please check your details.';
+          lookupMessage.hidden = false;
+          passContainer.hidden = true;
+          return;
+        }
+
+        const reg = data.registration;
+        // Show container FIRST so dimensions exist
+        passContainer.hidden = false;
+        renderPass(reg);
+        passContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      } catch (err) {
+        console.error(err);
+        lookupMessage.className = 'lookup-message error';
+        lookupMessage.textContent = 'Failed to connect to the server.';
+        lookupMessage.hidden = false;
+        passContainer.hidden = true;
+      } finally {
+        lookupBtn.disabled = false;
+        lookupBtn.innerHTML = '<span>Search Pass</span> <span>🔍</span>';
+      }
+    }
+
+    function renderPass(reg) {
+      document.getElementById('passName').textContent = reg.fullName;
+      document.getElementById('passId').textContent = reg.registrationId;
+      document.getElementById('stubId').textContent = reg.registrationId;
+      document.getElementById('passSlot').textContent = reg.slot;
+      document.getElementById('passCollege').textContent = reg.college;
+      document.getElementById('passDeptYear').textContent = `${reg.department} • ${reg.year}`;
+      document.getElementById('passUtr').textContent = reg.paymentRef;
+      document.getElementById('passDate').textContent = new Date(reg.createdAt).toLocaleDateString('en-IN', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric'
+      });
+
+      const badge = document.getElementById('passStatusBadge');
+      const isAttended = reg.status === 'attended';
+      badge.textContent = isAttended ? 'ATTENDED ✓' : (reg.status || 'CONFIRMED').toUpperCase();
+      badge.className = isAttended ? 'status-pill status-attended' : 'status-pill status-verified';
+
+      const attendedWrap = document.getElementById('attendedTimestampWrap');
+      if (isAttended && reg.attendedAt) {
+        attendedWrap.hidden = false;
+        document.getElementById('passAttendedTime').textContent = new Date(reg.attendedAt).toLocaleTimeString('en-IN', {
+          hour: '2-digit', minute: '2-digit'
+        });
+      } else {
+        attendedWrap.hidden = true;
+      }
+
+      // 1. Guaranteed High-Res QR Code Rendering
+      const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&margin=4&data=${encodeURIComponent(reg.registrationId)}`;
+      qrImageFallback.src = qrApiUrl;
+      qrImageFallback.style.display = 'block';
+
+      // 2. Client-side QRCode generator if available
+      try {
+        if (typeof QRCode !== 'undefined') {
+          qrContainer.innerHTML = '';
+          new QRCode(qrContainer, {
+            text: reg.registrationId,
+            width: 120,
+            height: 120,
+            colorDark: '#111313',
+            colorLight: '#ffffff',
+            correctLevel: QRCode.CorrectLevel.H
+          });
+        }
+      } catch (e) {
+        console.warn('QRCode JS render note:', e);
+        qrContainer.innerHTML = `<img src="${qrApiUrl}" alt="QR Code" style="width:120px;height:120px;display:block;margin:auto;" />`;
+      }
+
+      // 3. Real Barcode Generator
+      try {
+        if (typeof JsBarcode !== 'undefined') {
+          JsBarcode('#ticketBarcode', reg.registrationId, {
+            format: 'CODE128',
+            width: 1.6,
+            height: 40,
+            displayValue: false,
+            lineColor: '#111313',
+            background: 'transparent',
+            margin: 0
+          });
+        }
+      } catch (err) {
+        console.warn('JsBarcode render note:', err);
+      }
+    }
+  </script>
+</body>
+</html>

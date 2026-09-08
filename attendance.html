@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gate Attendance &amp; Barcode Scanner | BRAINSTORM</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700;800;900&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+  <!-- HTML5 QR Code / Barcode Camera Scanner Library -->
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+</head>
+<body class="scanner-body">
+  
+  <!-- Security Passcode Modal Lock Screen -->
+  <div id="securityLockModal" class="security-lock-modal">
+    <div class="security-card" id="securityCard">
+      <div class="lock-icon">🔒</div>
+      <p class="eyebrow">RESTRICTED ACCESS</p>
+      <h2>Gate Security Passcode</h2>
+      <p class="security-subtitle">
+        Enter the 6-digit coordinator security code to unlock the attendance scanner desk.
+      </p>
+
+      <form id="securityPinForm" class="pin-form">
+        <div class="pin-input-wrap">
+          <input
+            type="password"
+            id="securityPinInput"
+            maxlength="6"
+            inputmode="numeric"
+            pattern="[0-9]{6}"
+            placeholder="••••••"
+            autocomplete="off"
+            required
+            autofocus
+          />
+        </div>
+        <div id="pinErrorMsg" class="pin-error-msg" hidden></div>
+        <button type="submit" id="unlockBtn" class="primary-btn pin-submit-btn">
+          <span>Unlock Scanner Desk</span> <span>🔓</span>
+        </button>
+      </form>
+
+      <div class="security-foot">
+        <a href="index.html" class="subtle-link">← Return to Public Event Home</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-shell" id="portalContent" style="filter: blur(8px); pointer-events: none; transition: filter 0.3s ease;">
+    <header class="topbar">
+      <div class="brand">
+        <a href="index.html" style="display:flex; gap:12px; align-items:center;">
+          <div class="brand-mark">C3</div>
+          <div>
+            <span>CLAIM</span>
+            <strong>ATTENDANCE PORTAL</strong>
+          </div>
+        </a>
+      </div>
+      <nav class="nav-links">
+        <a class="nav-link-item" href="index.html">← Event Home</a>
+        <a class="nav-link-item" href="admin.html">📊 Admin Dashboard</a>
+        <button id="lockPortalBtn" class="secondary-btn btn-sm" title="Lock scanner desk" style="border-color: #ef4444; color: #ef4444;">
+          🔒 Lock Desk
+        </button>
+        <div id="scannerDbStatus" class="status-pill status-connected">
+          <span class="live-dot"></span> Gate 9312 Online
+        </div>
+      </nav>
+    </header>
+
+    <main class="scanner-main">
+      <div class="scanner-header-row">
+        <div>
+          <p class="eyebrow">GATE ENTRANCE • ROOM 9312 A &amp; B</p>
+          <h1>Scan Participant Ticket</h1>
+          <p class="hero-text">
+            Point camera at the QR code or Barcode on the participant's ticket to instantly verify and record attendance into MongoDB Atlas.
+          </p>
+        </div>
+        <div class="sound-toggle-wrap">
+          <label class="sound-toggle-label">
+            <input type="checkbox" id="soundToggle" checked />
+            <span>🔊 Audio Beep Enabled</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Live Attendance Metrics -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <span class="stat-label">TOTAL ATTENDED</span>
+          <div class="stat-value" id="gateAttended">0</div>
+          <small class="stat-foot" id="gateTotalRatio">of 0 Registered</small>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">SLOT 1 ATTENDED (9-12)</span>
+          <div class="stat-value" id="gateSlot1Attended">0</div>
+          <small class="stat-foot" id="gateSlot1Ratio">Morning Session</small>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">SLOT 2 ATTENDED (2-5)</span>
+          <div class="stat-value" id="gateSlot2Attended">0</div>
+          <small class="stat-foot" id="gateSlot2Ratio">Afternoon Session</small>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">ATTENDANCE TURNOUT</span>
+          <div class="stat-value" id="gateTurnout">0%</div>
+          <small class="stat-foot">Real-Time Turnout</small>
+        </div>
+      </div>
+
+      <!-- Scanner Workspace Grid -->
+      <div class="scanner-workspace">
+        
+        <!-- Left Column: Camera Viewfinder & Manual Barcode Gun Input -->
+        <div class="scanner-box">
+          <div class="scanner-box-header">
+            <h3>📷 Live Camera Viewfinder</h3>
+            <div class="camera-controls">
+              <select id="cameraSelect" class="scanner-select">
+                <option value="">Detecting Cameras...</option>
+              </select>
+              <button id="toggleCameraBtn" class="secondary-btn btn-sm">Start Camera</button>
+            </div>
+          </div>
+
+          <!-- Video Viewfinder Frame -->
+          <div class="viewfinder-container">
+            <div id="reader" class="scanner-reader"></div>
+            <div class="laser-scanner" id="laserScanner"></div>
+            <div id="cameraPlaceholder" class="camera-placeholder">
+              <div class="cam-icon">📹</div>
+              <p>Click <strong>"Start Camera"</strong> to scan ticket QR / Barcodes</p>
+            </div>
+          </div>
+
+          <!-- Manual / USB Barcode Gun Fast Entry -->
+          <div class="manual-scan-box">
+            <label for="manualScanInput">
+              <strong>Or Enter Registration ID / Use USB Barcode Gun:</strong>
+            </label>
+            <form id="manualScanForm" class="manual-scan-form">
+              <input
+                type="text"
+                id="manualScanInput"
+                placeholder="e.g. BS-523126 or Scan Barcode..."
+                autocomplete="off"
+                required
+              />
+              <button type="submit" class="primary-btn">
+                <span>Check-in</span> <span>↵</span>
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Right Column: Verification Result Card & Recent Check-ins Feed -->
+        <div class="result-box">
+          <div class="scanner-box-header">
+            <h3>📋 Scan Result &amp; Verification</h3>
+            <span id="scanStatusBadge" class="status-pill status-ready">WAITING FOR SCAN</span>
+          </div>
+
+          <!-- Result Display Card -->
+          <div id="resultCard" class="result-card result-idle">
+            <div class="result-icon-large" id="resultIcon">◎</div>
+            <h2 id="resultTitle">Ready to Scan</h2>
+            <p id="resultSubtitle" class="result-msg">Scan a ticket QR code or enter Registration ID above.</p>
+
+            <div id="participantDetails" class="participant-scan-details" hidden>
+              <div class="detail-row"><span>Participant:</span><strong id="resName">--</strong></div>
+              <div class="detail-row"><span>Registration ID:</span><b class="highlight-id" id="resId">--</b></div>
+              <div class="detail-row"><span>Allocated Slot:</span><strong id="resSlot">--</strong></div>
+              <div class="detail-row"><span>College:</span><span id="resCollege">--</span></div>
+              <div class="detail-row"><span>Dept &amp; Year:</span><span id="resDeptYear">--</span></div>
+              <div class="detail-row"><span>Payment UTR:</span><code id="resUtr">--</code></div>
+              <div class="detail-row"><span>Check-in Time:</span><b id="resTime" style="color: #0aa66d;">--</b></div>
+            </div>
+          </div>
+
+          <!-- Recent Check-ins Timeline -->
+          <div class="recent-feed-section">
+            <div class="feed-header">
+              <h4>🕒 Live Check-in Stream</h4>
+              <button id="refreshFeedBtn" class="btn-text">Refresh</button>
+            </div>
+            <div class="recent-feed-list" id="recentFeedList">
+              <div class="feed-empty">No check-ins recorded yet today.</div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </main>
+
+    <footer>
+      <div>
+        <strong>KALASALINGAM ACADEMY OF RESEARCH AND EDUCATION</strong>
+        <span>School of Computing • Department of CSE • Event Gate Desk</span>
+      </div>
+      <div>
+        <span>CLAIM • GROUP 3 • BRAINSTORM 2026</span>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    // Security Passcode Clearance
+    const securityLockModal = document.getElementById('securityLockModal');
+    const securityCard = document.getElementById('securityCard');
+    const securityPinForm = document.getElementById('securityPinForm');
+    const securityPinInput = document.getElementById('securityPinInput');
+    const pinErrorMsg = document.getElementById('pinErrorMsg');
+    const unlockBtn = document.getElementById('unlockBtn');
+    const portalContent = document.getElementById('portalContent');
+    const lockPortalBtn = document.getElementById('lockPortalBtn');
+
+    function checkAuth() {
+      const isAuth = sessionStorage.getItem('attendance_authenticated') === 'true';
+      if (isAuth) {
+        unlockPortal();
+      } else {
+        lockPortal();
+      }
+    }
+
+    function unlockPortal() {
+      securityLockModal.style.display = 'none';
+      portalContent.style.filter = 'none';
+      portalContent.style.pointerEvents = 'auto';
+      manualScanInput?.focus();
+    }
+
+    function lockPortal() {
+      sessionStorage.removeItem('attendance_authenticated');
+      securityLockModal.style.display = 'flex';
+      portalContent.style.filter = 'blur(8px)';
+      portalContent.style.pointerEvents = 'none';
+      securityPinInput.value = '';
+      pinErrorMsg.hidden = true;
+      securityPinInput.focus();
+      if (isScanning) stopCamera();
+    }
+
+    lockPortalBtn?.addEventListener('click', lockPortal);
+
+    securityPinForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const pin = securityPinInput.value.trim();
+      unlockBtn.disabled = true;
+      unlockBtn.innerHTML = '<span>Verifying…</span> <span>↻</span>';
+      pinErrorMsg.hidden = true;
+
+      try {
+        const res = await fetch('/api/attendance/verify-pin', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ pin })
+        });
+
+        const data = await res.json();
+
+        if (res.ok && data.success) {
+          sessionStorage.setItem('attendance_authenticated', 'true');
+          unlockPortal();
+        } else {
+          showPinError(data.message || 'Incorrect security code. Access denied.');
+        }
+      } catch (err) {
+        // Fallback local check if server unreachable
+        if (pin === '090307') {
+          sessionStorage.setItem('attendance_authenticated', 'true');
+          unlockPortal();
+        } else {
+          showPinError('Incorrect security code. Access denied.');
+        }
+      } finally {
+        unlockBtn.disabled = false;
+        unlockBtn.innerHTML = '<span>Unlock Scanner Desk</span> <span>🔓</span>';
+      }
+    });
+
+    function showPinError(msg) {
+      pinErrorMsg.textContent = msg;
+      pinErrorMsg.hidden = false;
+      securityCard.classList.remove('shake');
+      void securityCard.offsetWidth; // Trigger reflow for animation
+      securityCard.classList.add('shake');
+      securityPinInput.value = '';
+      securityPinInput.focus();
+    }
+
+    // Audio Synthesizer via Web Audio API
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    let audioCtx = null;
+
+    function getAudioContext() {
+      if (!audioCtx) audioCtx = new AudioContext();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      return audioCtx;
+    }
+
+    function playBeep(freq, type, duration, delay = 0) {
+      if (!document.getElementById('soundToggle').checked) return;
+      try {
+        const ctx = getAudioContext();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, ctx.currentTime + delay);
+        gain.gain.setValueAtTime(0.3, ctx.currentTime + delay);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + delay + duration);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start(ctx.currentTime + delay);
+        osc.stop(ctx.currentTime + delay + duration);
+      } catch (e) {
+        console.warn('Audio play failed:', e);
+      }
+    }
+
+    function soundSuccess() {
+      playBeep(880, 'sine', 0.1, 0);       // High A5
+      playBeep(1320, 'sine', 0.18, 0.1);   // High E6
+    }
+
+    function soundWarning() {
+      playBeep(440, 'triangle', 0.15, 0);    // A4
+      playBeep(330, 'triangle', 0.25, 0.15); // E4
+    }
+
+    function soundError() {
+      playBeep(180, 'sawtooth', 0.35, 0);    // Low Buzz
+    }
+
+    // HTML5 QR Code Scanner Engine
+    let html5QrCode = null;
+    let isScanning = false;
+    let isProcessingScan = false;
+
+    const cameraSelect = document.getElementById('cameraSelect');
+    const toggleCameraBtn = document.getElementById('toggleCameraBtn');
+    const cameraPlaceholder = document.getElementById('cameraPlaceholder');
+    const laserScanner = document.getElementById('laserScanner');
+
+    const resultCard = document.getElementById('resultCard');
+    const resultIcon = document.getElementById('resultIcon');
+    const resultTitle = document.getElementById('resultTitle');
+    const resultSubtitle = document.getElementById('resultSubtitle');
+    const scanStatusBadge = document.getElementById('scanStatusBadge');
+    const participantDetails = document.getElementById('participantDetails');
+
+    const resName = document.getElementById('resName');
+    const resId = document.getElementById('resId');
+    const resSlot = document.getElementById('resSlot');
+    const resCollege = document.getElementById('resCollege');
+    const resDeptYear = document.getElementById('resDeptYear');
+    const resUtr = document.getElementById('resUtr');
+    const resTime = document.getElementById('resTime');
+
+    const manualScanForm = document.getElementById('manualScanForm');
+    const manualScanInput = document.getElementById('manualScanInput');
+    const recentFeedList = document.getElementById('recentFeedList');
+    const refreshFeedBtn = document.getElementById('refreshFeedBtn');
+
+    // Attendance stats elements
+    const gateAttended = document.getElementById('gateAttended');
+    const gateTotalRatio = document.getElementById('gateTotalRatio');
+    const gateSlot1Attended = document.getElementById('gateSlot1Attended');
+    const gateSlot2Attended = document.getElementById('gateSlot2Attended');
+    const gateTurnout = document.getElementById('gateTurnout');
+
+    async function initCameraList() {
+      try {
+        const devices = await Html5Qrcode.getCameras();
+        cameraSelect.innerHTML = '';
+        if (devices && devices.length) {
+          devices.forEach((cam, idx) => {
+            const option = document.createElement('option');
+            option.value = cam.id;
+            option.text = cam.label || `Camera ${idx + 1}`;
+            cameraSelect.appendChild(option);
+          });
+          const backCam = devices.find(d => d.label.toLowerCase().includes('back') || d.label.toLowerCase().includes('rear') || d.label.toLowerCase().includes('environment'));
+          if (backCam) cameraSelect.value = backCam.id;
+        } else {
+          cameraSelect.innerHTML = '<option value="">No Camera Found</option>';
+        }
+      } catch (err) {
+        console.warn('Could not enumerate cameras:', err);
+        cameraSelect.innerHTML = '<option value="">Camera Permission Needed</option>';
+      }
+    }
+
+    async function toggleCamera() {
+      if (isScanning) {
+        stopCamera();
+      } else {
+        startCamera();
+      }
+    }
+
+    async function startCamera() {
+      if (!html5QrCode) {
+        html5QrCode = new Html5Qrcode("reader");
+      }
+
+      const cameraId = cameraSelect.value;
+      const cameraConfig = cameraId ? { deviceId: { exact: cameraId } } : { facingMode: "environment" };
+
+      try {
+        toggleCameraBtn.disabled = true;
+        toggleCameraBtn.textContent = "Starting...";
+
+        await html5QrCode.start(
+          cameraConfig,
+          {
+            fps: 15,
+            qrbox: { width: 260, height: 260 },
+            aspectRatio: 1.0
+          },
+          onScanSuccess,
+          onScanError
+        );
+
+        isScanning = true;
+        cameraPlaceholder.style.display = 'none';
+        laserScanner.style.display = 'block';
+        toggleCameraBtn.disabled = false;
+        toggleCameraBtn.textContent = "Stop Camera";
+        toggleCameraBtn.className = "primary-btn btn-sm";
+      } catch (err) {
+        console.error('Failed to start camera:', err);
+        alert('Could not start camera. Please ensure camera permissions are allowed in your browser.');
+        toggleCameraBtn.disabled = false;
+        toggleCameraBtn.textContent = "Start Camera";
+      }
+    }
+
+    async function stopCamera() {
+      if (html5QrCode && isScanning) {
+        try {
+          await html5QrCode.stop();
+        } catch (e) {}
+        isScanning = false;
+        cameraPlaceholder.style.display = 'flex';
+        laserScanner.style.display = 'none';
+        toggleCameraBtn.textContent = "Start Camera";
+        toggleCameraBtn.className = "secondary-btn btn-sm";
+      }
+    }
+
+    function onScanSuccess(decodedText) {
+      if (isProcessingScan) return;
+      processAttendanceScan(decodedText);
+    }
+
+    function onScanError(errorMessage) {
+      // Ignore continuous search frame noise
+    }
+
+    // Process Attendance Check-in API
+    async function processAttendanceScan(rawId) {
+      isProcessingScan = true;
+      const id = rawId.trim();
+
+      scanStatusBadge.className = 'status-pill status-ready';
+      scanStatusBadge.textContent = 'CHECKING...';
+
+      try {
+        const res = await fetch('/api/attendance/scan', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id, operator: 'Entrance Gate 9312' })
+        });
+
+        const data = await res.json();
+
+        if (res.status === 200 && data.success) {
+          soundSuccess();
+          displaySuccessResult(data.participant, data.attendedAt);
+          loadGateStats();
+          loadRecentCheckins();
+        } else if (res.status === 409) {
+          soundWarning();
+          displayDuplicateResult(data.participant, data.attendedAt);
+        } else {
+          soundError();
+          displayErrorResult(data.message || 'Ticket not found in database!');
+        }
+
+      } catch (err) {
+        console.error('Scan Request Error:', err);
+        soundError();
+        displayErrorResult('Network error while contacting server.');
+      } finally {
+        setTimeout(() => {
+          isProcessingScan = false;
+        }, 2000);
+      }
+    }
+
+    function displaySuccessResult(reg, attendedAt) {
+      resultCard.className = 'result-card result-success';
+      resultIcon.textContent = '✓';
+      resultTitle.textContent = 'ENTRY GRANTED';
+      resultSubtitle.textContent = 'Attendance recorded successfully into MongoDB Atlas.';
+      scanStatusBadge.className = 'status-pill status-attended';
+      scanStatusBadge.textContent = 'CHECKED IN ✓';
+
+      resName.textContent = reg.fullName;
+      resId.textContent = reg.registrationId;
+      resSlot.textContent = reg.slot;
+      resCollege.textContent = reg.college;
+      resDeptYear.textContent = `${reg.department} • ${reg.year}`;
+      resUtr.textContent = reg.paymentRef;
+      resTime.textContent = new Date(attendedAt).toLocaleTimeString('en-IN', {
+        hour: '2-digit', minute: '2-digit', second: '2-digit'
+      });
+
+      participantDetails.hidden = false;
+    }
+
+    function displayDuplicateResult(reg, attendedAt) {
+      resultCard.className = 'result-card result-warning';
+      resultIcon.textContent = '⚠️';
+      resultTitle.textContent = 'ALREADY CHECKED IN!';
+      const timeStr = attendedAt ? new Date(attendedAt).toLocaleTimeString('en-IN') : 'Earlier';
+      resultSubtitle.textContent = `This participant was already admitted at ${timeStr}. Duplicate entry denied.`;
+      scanStatusBadge.className = 'status-pill status-duplicate';
+      scanStatusBadge.textContent = 'DUPLICATE ENTRY ⚠️';
+
+      if (reg) {
+        resName.textContent = reg.fullName;
+        resId.textContent = reg.registrationId;
+        resSlot.textContent = reg.slot;
+        resCollege.textContent = reg.college;
+        resDeptYear.textContent = `${reg.department} • ${reg.year}`;
+        resUtr.textContent = reg.paymentRef;
+        resTime.textContent = timeStr;
+        participantDetails.hidden = false;
+      }
+    }
+
+    function displayErrorResult(msg) {
+      resultCard.className = 'result-card result-error';
+      resultIcon.textContent = '✕';
+      resultTitle.textContent = 'INVALID TICKET';
+      resultSubtitle.textContent = msg;
+      scanStatusBadge.className = 'status-pill status-disconnected';
+      scanStatusBadge.textContent = 'UNRECOGNIZED ✕';
+      participantDetails.hidden = true;
+    }
+
+    // Manual Barcode Form
+    manualScanForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const val = manualScanInput.value.trim();
+      if (!val) return;
+      processAttendanceScan(val);
+      manualScanInput.value = '';
+      manualScanInput.focus();
+    });
+
+    // Load Gate Stats
+    async function loadGateStats() {
+      try {
+        const res = await fetch('/api/stats');
+        const data = await res.json();
+        if (data.success && data.stats) {
+          const s = data.stats;
+          gateAttended.textContent = s.attended;
+          gateTotalRatio.textContent = `of ${s.total} Registered Participants`;
+          gateSlot1Attended.textContent = s.slot1Attended;
+          gateSlot1Ratio.textContent = `of ${s.slot1} in Morning`;
+          gateSlot2Attended.textContent = s.slot2Attended;
+          gateSlot2Ratio.textContent = `of ${s.slot2} in Afternoon`;
+          gateTurnout.textContent = `${s.attendancePercentage}%`;
+        }
+      } catch (err) {
+        console.error('Stats load error:', err);
+      }
+    }
+
+    // Load Recent Check-ins
+    async function loadRecentCheckins() {
+      try {
+        const res = await fetch('/api/attendance/recent');
+        const data = await res.json();
+        if (data.success && data.recent) {
+          if (data.recent.length === 0) {
+            recentFeedList.innerHTML = '<div class="feed-empty">No check-ins recorded yet today.</div>';
+            return;
+          }
+
+          recentFeedList.innerHTML = data.recent.map(r => {
+            const time = new Date(r.attendedAt).toLocaleTimeString('en-IN', {
+              hour: '2-digit', minute: '2-digit'
+            });
+            const isSlot1 = r.slot.includes('Slot 1');
+
+            return `
+              <div class="feed-item">
+                <div class="feed-time">${time}</div>
+                <div class="feed-info">
+                  <strong>${r.fullName}</strong>
+                  <div class="feed-meta">
+                    <code>${r.registrationId}</code> • ${r.college}
+                  </div>
+                </div>
+                <div class="feed-slot">
+                  <span class="slot-pill ${isSlot1 ? 'badge-slot1' : 'badge-slot2'}">${isSlot1 ? 'Slot 1' : 'Slot 2'}</span>
+                </div>
+              </div>
+            `;
+          }).join('');
+        }
+      } catch (err) {
+        console.error('Recent feed load error:', err);
+      }
+    }
+
+    // Initialization
+    toggleCameraBtn.addEventListener('click', toggleCamera);
+    refreshFeedBtn.addEventListener('click', () => {
+      loadGateStats();
+      loadRecentCheckins();
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+      checkAuth();
+      initCameraList();
+      loadGateStats();
+      loadRecentCheckins();
+    });
+  </script>
+</body>
+</html>

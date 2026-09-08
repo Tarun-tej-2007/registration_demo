@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard — BRAINSTORM Registration Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700;800;900&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="admin-body">
+
+  <!-- Security Passcode Modal Lock Screen -->
+  <div id="adminSecurityLockModal" class="security-lock-modal">
+    <div class="security-card" id="adminSecurityCard">
+      <div class="lock-icon">🔒</div>
+      <p class="eyebrow">RESTRICTED ADMIN ACCESS</p>
+      <h2>Admin Passcode Clearance</h2>
+      <p class="security-subtitle">
+        Enter the coordinator security passcode to access organizer controls, financial collections, and participant records.
+      </p>
+
+      <form id="adminPinForm" class="pin-form">
+        <div class="pin-input-wrap">
+          <input
+            type="password"
+            id="adminPinInput"
+            maxlength="6"
+            inputmode="numeric"
+            pattern="[0-9]{6}"
+            placeholder="••••••"
+            autocomplete="off"
+            required
+            autofocus
+          />
+        </div>
+        <div id="adminPinErrorMsg" class="pin-error-msg" hidden></div>
+        <button type="submit" id="adminUnlockBtn" class="primary-btn pin-submit-btn">
+          <span>Unlock Admin Dashboard</span> <span>🔓</span>
+        </button>
+      </form>
+
+      <div class="security-foot">
+        <a href="index.html" class="subtle-link">← Return to Public Event Home</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-shell" id="adminPortalContent" style="filter: blur(8px); pointer-events: none; transition: filter 0.3s ease;">
+    <header class="topbar">
+      <div class="brand">
+        <a href="index.html" style="display:flex; gap:12px; align-items:center;">
+          <div class="brand-mark">C3</div>
+          <div>
+            <span>CLAIM</span>
+            <strong>ADMIN DASHBOARD</strong>
+          </div>
+        </a>
+      </div>
+      <nav class="nav-links">
+        <a class="nav-link-item" href="index.html">← Event Landing</a>
+        <a class="nav-btn" href="attendance.html" style="background:var(--green); color:var(--ink);">📷 Gate Scanner <span>↗</span></a>
+        <button id="lockAdminBtn" class="secondary-btn btn-sm" title="Lock admin dashboard" style="border-color: #ef4444; color: #ef4444;">
+          🔒 Lock Admin
+        </button>
+        <div id="dbStatusPill" class="status-pill status-connected">
+          <span class="live-dot"></span> MongoDB Online
+        </div>
+      </nav>
+    </header>
+
+    <main class="admin-main">
+      <div class="admin-header-row">
+        <div>
+          <p class="eyebrow">ORGANIZER PORTAL • CLAIM GROUP 3</p>
+          <h1>Participant Registrations &amp; Gate Control</h1>
+          <p class="hero-text">
+            Live database dashboard showing registered participants and real-time event attendance for the BRAINSTORM MCQ event.
+          </p>
+        </div>
+        <div class="admin-header-actions">
+          <a href="attendance.html" class="primary-btn" style="background: #0aa66d; border-color: #0aa66d;">
+            📷 Launch Scanner
+          </a>
+          <button id="refreshBtn" class="secondary-btn" title="Reload registrations">
+            ↻ Refresh Data
+          </button>
+          <a href="/api/export" class="primary-btn" id="exportBtn" download>
+            📥 Export to CSV (Excel)
+          </a>
+        </div>
+      </div>
+
+      <!-- Stats Grid -->
+      <div class="stats-grid stats-grid-5">
+        <div class="stat-card">
+          <span class="stat-label">TOTAL REGISTERED</span>
+          <div class="stat-value" id="statTotal">--</div>
+          <small class="stat-foot">MongoDB Verified Entries</small>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">ATTENDED (CHECKED IN)</span>
+          <div class="stat-value" style="color: #0aa66d;" id="statAttended">0</div>
+          <small class="stat-foot" id="statTurnoutPct">0% Turnout</small>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">SLOT 1 (9 AM – 12 PM)</span>
+          <div class="stat-value" id="statSlot1">--</div>
+          <small class="stat-foot" id="statSlot1AttendedFoot">-- attended</small>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">SLOT 2 (2 PM – 5 PM)</span>
+          <div class="stat-value" id="statSlot2">--</div>
+          <small class="stat-foot" id="statSlot2AttendedFoot">-- attended</small>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">TOTAL COLLECTION</span>
+          <div class="stat-value" id="statRevenue">₹0</div>
+          <small class="stat-foot">₹100 / participant</small>
+        </div>
+      </div>
+
+      <!-- Filter and Search Bar -->
+      <div class="filter-bar">
+        <div class="search-wrap">
+          <input
+            type="text"
+            id="searchInput"
+            placeholder="Search by ID, Name, Email, Phone, College, or UTR..."
+          />
+        </div>
+        <div class="filter-controls">
+          <select id="filterStatus">
+            <option value="all">All Statuses</option>
+            <option value="attended">Attended ✓</option>
+            <option value="confirmed">Confirmed (Not Checked In)</option>
+          </select>
+          <select id="filterSlot">
+            <option value="all">All Slots</option>
+            <option value="Slot 1">Slot 1 (Morning)</option>
+            <option value="Slot 2">Slot 2 (Afternoon)</option>
+          </select>
+          <select id="filterYear">
+            <option value="all">All Years</option>
+            <option value="1st Year">1st Year</option>
+            <option value="2nd Year">2nd Year</option>
+            <option value="3rd Year">3rd Year</option>
+            <option value="4th Year">4th Year</option>
+          </select>
+          <select id="sortOrder">
+            <option value="desc">Newest First</option>
+            <option value="asc">Oldest First</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Table Section -->
+      <div class="table-container">
+        <div id="tableLoading" class="table-loading" hidden>
+          <div class="spinner"></div> Loading records from MongoDB Atlas...
+        </div>
+        <table class="data-table" id="registrationsTable">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Participant</th>
+              <th>Contact Info</th>
+              <th>Institution / Dept</th>
+              <th>Slot</th>
+              <th>Payment UTR</th>
+              <th>Attendance</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            <!-- Dynamically populated -->
+          </tbody>
+        </table>
+        <div id="noResults" class="no-results" hidden>
+          <p>No participant registrations found matching your query.</p>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <div>
+        <strong>KALASALINGAM ACADEMY OF RESEARCH AND EDUCATION</strong>
+        <span>School of Computing • Department of CSE</span>
+      </div>
+      <span>CLAIM • GROUP 3 • BRAINSTORM</span>
+    </footer>
+  </div>
+
+  <script>
+    // Admin Passcode Clearance Logic
+    const adminSecurityLockModal = document.getElementById('adminSecurityLockModal');
+    const adminSecurityCard = document.getElementById('adminSecurityCard');
+    const adminPinForm = document.getElementById('adminPinForm');
+    const adminPinInput = document.getElementById('adminPinInput');
+    const adminPinErrorMsg = document.getElementById('adminPinErrorMsg');
+    const adminUnlockBtn = document.getElementById('adminUnlockBtn');
+    const adminPortalContent = document.getElementById('adminPortalContent');
+    const lockAdminBtn = document.getElementById('lockAdminBtn');
+
+    function checkAdminAuth() {
+      const isAuth = sessionStorage.getItem('admin_authenticated') === 'true';
+      if (isAuth) {
+        unlockAdmin();
+      } else {
+        lockAdmin();
+      }
+    }
+
+    function unlockAdmin() {
+      adminSecurityLockModal.style.display = 'none';
+      adminPortalContent.style.filter = 'none';
+      adminPortalContent.style.pointerEvents = 'auto';
+      loadStats();
+      loadRegistrations();
+      checkHealth();
+    }
+
+    function lockAdmin() {
+      sessionStorage.removeItem('admin_authenticated');
+      adminSecurityLockModal.style.display = 'flex';
+      adminPortalContent.style.filter = 'blur(8px)';
+      adminPortalContent.style.pointerEvents = 'none';
+      adminPinInput.value = '';
+      adminPinErrorMsg.hidden = true;
+      adminPinInput.focus();
+    }
+
+    lockAdminBtn?.addEventListener('click', lockAdmin);
+
+    adminPinForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const pin = adminPinInput.value.trim();
+      adminUnlockBtn.disabled = true;
+      adminUnlockBtn.innerHTML = '<span>Verifying…</span> <span>↻</span>';
+      adminPinErrorMsg.hidden = true;
+
+      try {
+        const res = await fetch('/api/attendance/verify-pin', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ pin })
+        });
+
+        const data = await res.json();
+
+        if (res.ok && data.success) {
+          sessionStorage.setItem('admin_authenticated', 'true');
+          unlockAdmin();
+        } else {
+          showAdminPinError(data.message || 'Incorrect security code. Access denied.');
+        }
+      } catch (err) {
+        if (pin === '090307') {
+          sessionStorage.setItem('admin_authenticated', 'true');
+          unlockAdmin();
+        } else {
+          showAdminPinError('Incorrect security code. Access denied.');
+        }
+      } finally {
+        adminUnlockBtn.disabled = false;
+        adminUnlockBtn.innerHTML = '<span>Unlock Admin Dashboard</span> <span>🔓</span>';
+      }
+    });
+
+    function showAdminPinError(msg) {
+      adminPinErrorMsg.textContent = msg;
+      adminPinErrorMsg.hidden = false;
+      adminSecurityCard.classList.remove('shake');
+      void adminSecurityCard.offsetWidth;
+      adminSecurityCard.classList.add('shake');
+      adminPinInput.value = '';
+      adminPinInput.focus();
+    }
+
+    // Dashboard Data Logic
+    let allRegistrations = [];
+
+    const statTotal = document.getElementById('statTotal');
+    const statAttended = document.getElementById('statAttended');
+    const statTurnoutPct = document.getElementById('statTurnoutPct');
+    const statSlot1 = document.getElementById('statSlot1');
+    const statSlot1AttendedFoot = document.getElementById('statSlot1AttendedFoot');
+    const statSlot2 = document.getElementById('statSlot2');
+    const statSlot2AttendedFoot = document.getElementById('statSlot2AttendedFoot');
+    const statRevenue = document.getElementById('statRevenue');
+    const dbStatusPill = document.getElementById('dbStatusPill');
+
+    const searchInput = document.getElementById('searchInput');
+    const filterStatus = document.getElementById('filterStatus');
+    const filterSlot = document.getElementById('filterSlot');
+    const filterYear = document.getElementById('filterYear');
+    const sortOrder = document.getElementById('sortOrder');
+    const refreshBtn = document.getElementById('refreshBtn');
+
+    const tableBody = document.getElementById('tableBody');
+    const tableLoading = document.getElementById('tableLoading');
+    const noResults = document.getElementById('noResults');
+
+    async function checkHealth() {
+      try {
+        const res = await fetch('/api/health');
+        const data = await res.json();
+        if (data.database && data.database.connected) {
+          dbStatusPill.className = 'status-pill status-connected';
+          dbStatusPill.innerHTML = '<span class="live-dot"></span> MongoDB Online';
+        } else {
+          dbStatusPill.className = 'status-pill status-disconnected';
+          dbStatusPill.innerHTML = '⚠️ DB Disconnected';
+        }
+      } catch (e) {
+        dbStatusPill.className = 'status-pill status-disconnected';
+        dbStatusPill.innerHTML = '⚠️ Server Offline';
+      }
+    }
+
+    async function loadStats() {
+      try {
+        const res = await fetch('/api/stats');
+        const data = await res.json();
+        if (data.success && data.stats) {
+          const s = data.stats;
+          statTotal.textContent = s.total;
+          statAttended.textContent = s.attended;
+          statTurnoutPct.textContent = `${s.attendancePercentage}% Turnout`;
+          statSlot1.textContent = s.slot1;
+          statSlot1AttendedFoot.textContent = `${s.slot1Attended} attended`;
+          statSlot2.textContent = s.slot2;
+          statSlot2AttendedFoot.textContent = `${s.slot2Attended} attended`;
+          statRevenue.textContent = `₹${s.totalRevenue.toLocaleString('en-IN')}`;
+        }
+      } catch (err) {
+        console.error('Error fetching stats:', err);
+      }
+    }
+
+    async function loadRegistrations() {
+      tableLoading.hidden = false;
+      noResults.hidden = true;
+      try {
+        const status = filterStatus.value;
+        const slot = filterSlot.value;
+        const year = filterYear.value;
+        const search = searchInput.value.trim();
+        const sort = sortOrder.value;
+
+        const params = new URLSearchParams();
+        if (status !== 'all') params.append('status', status);
+        if (slot !== 'all') params.append('slot', slot);
+        if (year !== 'all') params.append('year', year);
+        if (search) params.append('search', search);
+        if (sort) params.append('sort', sort);
+
+        const res = await fetch(`/api/registrations?${params.toString()}`);
+        const data = await res.json();
+
+        if (data.success) {
+          allRegistrations = data.registrations || [];
+          renderTable(allRegistrations);
+        }
+      } catch (err) {
+        console.error('Error fetching registrations:', err);
+        tableBody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:30px; color:#ff5555;">Failed to load data from server.</td></tr>`;
+      } finally {
+        tableLoading.hidden = true;
+      }
+    }
+
+    function renderTable(list) {
+      if (!list || list.length === 0) {
+        tableBody.innerHTML = '';
+        noResults.hidden = false;
+        return;
+      }
+      noResults.hidden = true;
+
+      tableBody.innerHTML = list.map(reg => {
+        const isSlot1 = reg.slot.includes('Slot 1');
+        const slotBadgeClass = isSlot1 ? 'badge-slot1' : 'badge-slot2';
+        const isAttended = reg.status === 'attended';
+        const formattedDate = new Date(reg.createdAt).toLocaleString('en-IN', {
+          day: 'numeric',
+          month: 'short',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+
+        const checkInInfo = isAttended && reg.attendedAt
+          ? `<div class="row-attended">Checked in: ${new Date(reg.attendedAt).toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit' })}</div>`
+          : '';
+
+        return `
+          <tr id="row-${reg.registrationId}">
+            <td>
+              <a href="status.html?id=${reg.registrationId}" target="_blank" class="table-id-link" title="Open Pass">
+                <strong>${reg.registrationId}</strong> ↗
+              </a>
+              <div class="row-date">${formattedDate}</div>
+            </td>
+            <td>
+              <strong>${escapeHtml(reg.fullName)}</strong>
+              <div class="row-year">${escapeHtml(reg.year)}</div>
+            </td>
+            <td>
+              <div><a href="mailto:${escapeHtml(reg.email)}" class="subtle-link">✉ ${escapeHtml(reg.email)}</a></div>
+              <div><a href="tel:${escapeHtml(reg.phone)}" class="subtle-link">✆ ${escapeHtml(reg.phone)}</a></div>
+            </td>
+            <td>
+              <div><strong>${escapeHtml(reg.college)}</strong></div>
+              <div class="row-dept">${escapeHtml(reg.department)}</div>
+            </td>
+            <td>
+              <span class="slot-pill ${slotBadgeClass}">${isSlot1 ? 'Slot 1 (9-12)' : 'Slot 2 (2-5)'}</span>
+            </td>
+            <td>
+              <code class="utr-code">${escapeHtml(reg.paymentRef)}</code>
+              <div class="row-fee">₹100 Paid</div>
+            </td>
+            <td>
+              <span class="status-pill ${isAttended ? 'status-attended' : 'status-confirmed'}">
+                ${isAttended ? 'ATTENDED ✓' : 'CONFIRMED'}
+              </span>
+              ${checkInInfo}
+            </td>
+            <td class="action-cell">
+              <button class="btn-icon" title="View Pass" onclick="window.open('status.html?id=${reg.registrationId}', '_blank')">🔍</button>
+              <button class="btn-icon btn-delete" title="Delete Registration" onclick="deleteRegistration('${reg.registrationId}')">🗑️</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    async function deleteRegistration(id) {
+      if (!confirm(`Are you sure you want to delete registration "${id}" from MongoDB?`)) return;
+      try {
+        const res = await fetch(`/api/registration/${id}`, { method: 'DELETE' });
+        const data = await res.json();
+        if (data.success) {
+          loadRegistrations();
+          loadStats();
+        } else {
+          alert(data.message || 'Could not delete registration.');
+        }
+      } catch (err) {
+        alert('Error connecting to backend server.');
+      }
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    // Event Listeners
+    let debounceTimer;
+    searchInput.addEventListener('input', () => {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(loadRegistrations, 250);
+    });
+
+    filterStatus.addEventListener('change', loadRegistrations);
+    filterSlot.addEventListener('change', loadRegistrations);
+    filterYear.addEventListener('change', loadRegistrations);
+    sortOrder.addEventListener('change', loadRegistrations);
+    refreshBtn.addEventListener('click', () => {
+      loadStats();
+      loadRegistrations();
+      checkHealth();
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+      checkAdminAuth();
+    });
+
+    setInterval(() => {
+      if (sessionStorage.getItem('admin_authenticated') === 'true') {
+        loadStats();
+        checkHealth();
+      }
+    }, 30000);
+  </script>
+</body>
+</html>
