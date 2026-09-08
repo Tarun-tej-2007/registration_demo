@@ -151,6 +151,9 @@ h1 span { color: var(--green); text-shadow: 3px 3px 0 var(--blue); }
 .detail-grid {
   display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
 }
+.detail-grid-2 {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;
+}
 .detail-card {
   padding: 28px; background: rgba(255,253,245,.85);
   border: 2px solid var(--ink); border-radius: 20px;
@@ -562,7 +565,7 @@ footer span { margin-top: 5px; color: #8f9b9b; }
   .nav-btn { padding: 9px 12px; font-size: 12px; }
   .hero { padding: 25px 18px 70px; }
   h1 { font-size: 46px; letter-spacing: -2px; }
-  .quick-stats, .form-row, .slot-options, .detail-grid, .stats-grid, .stats-grid-5, .pass-grid { grid-template-columns: 1fr; }
+  .quick-stats, .form-row, .slot-options, .detail-grid, .detail-grid-2, .stats-grid, .stats-grid-5, .pass-grid { grid-template-columns: 1fr; }
   .details-section, .register-section { padding: 60px 18px; }
   .registration-form { box-shadow: 8px 8px 0 rgba(37,103,199,.5); }
   .lookup-input-group { flex-direction: column; }
