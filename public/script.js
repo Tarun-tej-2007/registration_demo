@@ -31,8 +31,9 @@ function clearAlert() {
   }
 }
 
-// Fetch live event stats & DB status on page load
+// Fetch live event stats & DB status on page load (if banner present)
 async function fetchLiveStats() {
+  if (!liveStatusText && !statTotalCount) return;
   try {
     const healthRes = await fetch('/api/health');
     const healthData = await healthRes.json();
