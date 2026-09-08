@@ -152,7 +152,7 @@
               <th>Participant</th>
               <th>Contact Info</th>
               <th>Department</th>
-              <th>Payment UTR</th>
+              <th>Payment &amp; Proof</th>
               <th>Attendance</th>
               <th>Actions</th>
             </tr>
@@ -166,6 +166,25 @@
         </div>
       </div>
     </main>
+
+    <!-- Payment Proof Lightbox Modal -->
+    <div id="proofModal" class="proof-modal" hidden>
+      <div class="proof-modal-card">
+        <div class="proof-modal-header">
+          <h3 id="proofModalTitle">Payment Screenshot Proof</h3>
+          <button type="button" class="modal-close-btn" onclick="closeProofModal()">✕</button>
+        </div>
+        <div class="proof-image-container">
+          <img id="proofModalImg" class="proof-full-img" src="" alt="Payment Screenshot" />
+        </div>
+        <div class="proof-modal-footer">
+          <div>
+            <strong id="proofParticipantName">--</strong> • UTR: <code id="proofUtr">--</code>
+          </div>
+          <button type="button" class="secondary-btn btn-sm" onclick="closeProofModal()">Close</button>
+        </div>
+      </div>
+    </div>
 
     <footer>
       <div>
@@ -365,6 +384,10 @@
           ? `<div class="row-attended">Checked in: ${new Date(reg.attendedAt).toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit' })}</div>`
           : '';
 
+        const proofButton = reg.paymentScreenshot
+          ? `<button type="button" class="secondary-btn btn-sm" style="margin-top:6px; padding:3px 8px; font-size:11px; display:inline-flex; align-items:center; gap:4px;" onclick="viewProof('${reg.registrationId}')">🖼️ View Proof</button>`
+          : `<div style="font-size:11px; color:#a0b2b2; margin-top:4px;">No screenshot</div>`;
+
         return `
           <tr id="row-${reg.registrationId}">
             <td>
@@ -387,6 +410,7 @@
             <td>
               <code class="utr-code">${escapeHtml(reg.paymentRef)}</code>
               <div class="row-fee">₹100 Paid</div>
+              ${proofButton}
             </td>
             <td>
               <span class="status-pill ${isAttended ? 'status-attended' : 'status-confirmed'}">
@@ -401,6 +425,24 @@
           </tr>
         `;
       }).join('');
+    }
+
+    function viewProof(id) {
+      const item = allRegistrations.find(r => r.registrationId === id);
+      if (!item || !item.paymentScreenshot) {
+        alert('No payment screenshot available for this registration.');
+        return;
+      }
+      document.getElementById('proofModalTitle').textContent = `Payment Proof — ${item.registrationId}`;
+      document.getElementById('proofModalImg').src = item.paymentScreenshot;
+      document.getElementById('proofParticipantName').textContent = item.fullName;
+      document.getElementById('proofUtr').textContent = item.paymentRef;
+      document.getElementById('proofModal').hidden = false;
+    }
+
+    function closeProofModal() {
+      document.getElementById('proofModal').hidden = true;
+      document.getElementById('proofModalImg').src = '';
     }
 
     async function deleteRegistration(id) {

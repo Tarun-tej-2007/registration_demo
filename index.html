@@ -138,65 +138,168 @@
         <form id="registrationForm" class="registration-form" novalidate>
           <div id="formAlert" class="form-alert" hidden></div>
 
-          <div class="form-row">
-            <label>
-              Registration Number / Roll No. *
-              <input name="registrationNumber" type="text" placeholder="e.g. 9922004123 or Roll No." required />
-            </label>
-            <label>
-              Full Name *
-              <input name="fullName" type="text" placeholder="Enter your full name" required />
-            </label>
+          <!-- Step Progress Indicator -->
+          <div class="step-progress-wrapper">
+            <div class="step-progress-bar">
+              <div class="step-item active" id="step1Indicator">
+                <div class="step-bubble">1</div>
+                <div class="step-text">
+                  <span class="step-tag">Step 1</span>
+                  <span class="step-title">Participant Info</span>
+                </div>
+              </div>
+              <div class="step-connector" id="stepConnector"></div>
+              <div class="step-item" id="step2Indicator">
+                <div class="step-bubble">2</div>
+                <div class="step-text">
+                  <span class="step-tag">Step 2</span>
+                  <span class="step-title">Payment &amp; Proof</span>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <div class="form-row">
-            <label>
-              Email Address *
-              <input name="email" type="email" placeholder="you@example.com" required />
-            </label>
-            <label>
-              Mobile Number (10 Digits) *
-              <input name="phone" type="tel" inputmode="numeric" maxlength="10"
-                     pattern="[0-9]{10}" placeholder="e.g. 9876543210" required />
-            </label>
+          <!-- STEP 1: Participant Information -->
+          <div class="step-pane active" id="step1Pane">
+            <div class="form-row">
+              <label>
+                Registration Number / Roll No. *
+                <input name="registrationNumber" id="registrationNumber" type="text" placeholder="e.g. 9922004123 or Roll No." required />
+              </label>
+              <label>
+                Full Name *
+                <input name="fullName" id="fullName" type="text" placeholder="Enter your full name" required />
+              </label>
+            </div>
+
+            <div class="form-row">
+              <label>
+                Email Address *
+                <input name="email" id="email" type="email" placeholder="you@example.com" required />
+              </label>
+              <label>
+                Mobile Number (10 Digits) *
+                <input name="phone" id="phone" type="tel" inputmode="numeric" maxlength="10"
+                       pattern="[0-9]{10}" placeholder="e.g. 9876543210" required />
+              </label>
+            </div>
+
+            <div class="form-row">
+              <label>
+                Department *
+                <input name="department" id="department" type="text" placeholder="e.g. CSE, IT, ECE" required />
+              </label>
+              <label>
+                Year of Study *
+                <select name="year" id="year" required>
+                  <option value="">Select year</option>
+                  <option value="1st Year">1st Year</option>
+                  <option value="2nd Year">2nd Year</option>
+                  <option value="3rd Year">3rd Year</option>
+                  <option value="4th Year">4th Year</option>
+                  <option value="Postgraduate / Other">Postgraduate / Other</option>
+                </select>
+              </label>
+            </div>
+
+            <button type="button" id="goToStep2Btn" class="primary-btn submit-btn" style="width: 100%; margin-top: 10px;">
+              <span>Proceed to Payment Step 2</span> <span>→</span>
+            </button>
           </div>
 
-          <div class="form-row">
+          <!-- STEP 2: Bank UPI QR Payment & Screenshot Upload -->
+          <div class="step-pane" id="step2Pane">
+            
+            <!-- UPI Payment QR Box -->
+            <div class="payment-qr-card">
+              <div class="qr-card-header">
+                <h3><span>💳</span> Scan UPI QR &amp; Pay</h3>
+                <span class="qr-fee-pill">₹100 Fee</span>
+              </div>
+
+              <div class="qr-layout-grid">
+                <div class="qr-frame-box">
+                  <img
+                    src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&amp;margin=6&amp;data=upi%3A%2F%2Fpay%3Fpa%3Dtaruntej947%40okhdfcbank%26pn%3DTECH%2520APTI%2520EXPLORE%25202.0%26am%3D100%26cu%3DINR"
+                    alt="UPI Payment QR Code"
+                    id="upiPaymentQrImg"
+                  />
+                  <small style="color:var(--ink); font-weight:700; display:block; margin-top:4px; font-size:11px;">SCAN WITH ANY UPI APP</small>
+                </div>
+
+                <div class="qr-meta-details">
+                  <p class="qr-instruction">
+                    Open <strong>Google Pay</strong>, <strong>PhonePe</strong>, or <strong>Paytm</strong>, scan the QR code and complete the <strong>₹100</strong> payment.
+                  </p>
+                  
+                  <div class="upi-copy-box">
+                    <div>
+                      <small style="display:block; color:#a0b2b2; font-size:10px;">UPI ID / VPA</small>
+                      <span class="upi-id-text" id="upiIdText">taruntej947@okhdfcbank</span>
+                    </div>
+                    <button type="button" class="copy-upi-btn" id="copyUpiBtn">📋 Copy UPI</button>
+                  </div>
+
+                  <div class="accepted-apps">
+                    <span>Accepted:</span>
+                    <span class="app-badge">GPay</span>
+                    <span class="app-badge">PhonePe</span>
+                    <span class="app-badge">Paytm</span>
+                    <span class="app-badge">BHIM</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Payment Reference UTR Input -->
             <label>
-              Department *
-              <input name="department" type="text" placeholder="e.g. CSE, IT, ECE" required />
+              Payment UTR / 12-Digit Transaction Reference *
+              <input name="paymentRef" id="paymentRef" type="text" placeholder="e.g. 425123984521 or UPI Transaction ID" required />
+              <small class="field-note">Copy from payment receipt in GPay / PhonePe / Paytm / Bank</small>
             </label>
-            <label>
-              Year of Study *
-              <select name="year" required>
-                <option value="">Select year</option>
-                <option value="1st Year">1st Year</option>
-                <option value="2nd Year">2nd Year</option>
-                <option value="3rd Year">3rd Year</option>
-                <option value="4th Year">4th Year</option>
-                <option value="Postgraduate / Other">Postgraduate / Other</option>
-              </select>
+
+            <!-- Mandatory Payment Screenshot Upload Dropzone -->
+            <label style="margin-bottom: 8px;">
+              Upload Payment Screenshot (Mandatory) *
             </label>
+            <div class="upload-dropzone" id="screenshotDropzone">
+              <input type="file" id="screenshotInput" accept="image/png, image/jpeg, image/jpg, image/webp" style="display: none;" />
+              <div class="dropzone-inner" id="dropzoneEmpty">
+                <div class="upload-icon-circle">📷</div>
+                <p class="upload-primary-text">Click or Drag &amp; Drop Payment Screenshot Here</p>
+                <p class="upload-sub-text">PNG, JPG, JPEG, WEBP • Max 5MB (UTR/Transaction must be visible)</p>
+              </div>
+            </div>
+
+            <!-- Preview Card (shown after upload) -->
+            <div class="file-preview-card" id="screenshotPreviewCard" hidden>
+              <img id="previewImage" class="preview-thumb-img" alt="Payment proof preview" />
+              <div class="preview-file-info">
+                <span class="preview-file-name" id="previewFileName">screenshot.jpg</span>
+                <span class="preview-file-size" id="previewFileSize">0 KB</span>
+              </div>
+              <button type="button" class="remove-file-btn" id="removeScreenshotBtn">✕ Remove</button>
+            </div>
+
+            <!-- Consent Checkbox -->
+            <label class="consent" style="margin-top: 18px;">
+              <input name="consent" id="consentCheck" type="checkbox" required />
+              <span>I confirm that I have paid ₹100 and attached the genuine transaction screenshot.</span>
+            </label>
+
+            <div class="step-actions-row">
+              <button type="button" id="backToStep1Btn" class="secondary-btn">
+                <span>← Back to Step 1</span>
+              </button>
+              <button id="submitBtn" class="primary-btn submit-btn" type="submit">
+                <span>Complete Registration</span> <span>✓</span>
+              </button>
+            </div>
+
+            <p class="form-note">
+              🔒 100% Encrypted &amp; Secured with MongoDB Cloud Database. Instant ticket pass generated.
+            </p>
           </div>
-
-          <label>
-            Payment UTR / Transaction Reference *
-            <input name="paymentRef" type="text" placeholder="Enter 12-digit UTR or Transaction ID" required />
-            <small class="field-note">Registration fee: ₹100 • Enter Google Pay / PhonePe / Paytm / Bank UTR</small>
-          </label>
-
-          <label class="consent">
-            <input name="consent" type="checkbox" required />
-            <span>I confirm that the information provided is accurate and I will attend the event.</span>
-          </label>
-
-          <button id="submitBtn" class="submit-btn" type="submit">
-            <span>Complete Registration</span><span>→</span>
-          </button>
-
-          <p class="form-note">
-            🔒 Secured with MongoDB Cloud Database. Instant confirmation generated.
-          </p>
         </form>
       </section>
 

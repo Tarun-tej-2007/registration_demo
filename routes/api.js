@@ -22,12 +22,19 @@ async function generateUniqueRegistrationId() {
 // @desc    Create a new participant registration
 router.post('/register', async (req, res) => {
   try {
-    const { registrationNumber, fullName, email, phone, department, year, paymentRef } = req.body;
+    const { registrationNumber, fullName, email, phone, department, year, paymentRef, paymentScreenshot } = req.body;
 
     if (!fullName || !email || !phone || !department || !year || !paymentRef) {
       return res.status(400).json({
         success: false,
         message: 'All fields are required. Please fill in every detail.'
+      });
+    }
+
+    if (!paymentScreenshot || !paymentScreenshot.trim()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Payment screenshot proof is mandatory. Please upload your payment confirmation screenshot.'
       });
     }
 
@@ -84,6 +91,7 @@ router.post('/register', async (req, res) => {
       department: department.trim(),
       year: year.trim(),
       paymentRef: cleanPaymentRef,
+      paymentScreenshot: paymentScreenshot.trim(),
       fee: 100,
       status: 'confirmed'
     });

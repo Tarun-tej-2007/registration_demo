@@ -48,6 +48,10 @@ const registrationSchema = new mongoose.Schema(
       required: [true, 'Payment UTR / reference is required'],
       trim: true
     },
+    paymentScreenshot: {
+      type: String,
+      required: [true, 'Payment screenshot is required']
+    },
     fee: {
       type: Number,
       default: 100
