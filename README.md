@@ -1,6 +1,6 @@
-# BRAINSTORM — CLAIM Group 3 Registration Portal
+# TECH APTI EXPLORE 2.0 — CLAIM Group 3 Registration Portal
 
-A full-stack event registration and management system for the **BRAINSTORM** competitive MCQ challenge (Aptitude, Analytical Reasoning & Logical Reasoning) powered by **Node.js, Express, and MongoDB Atlas**.
+A full-stack event registration and management system for the **TECH APTI EXPLORE 2.0** competitive MCQ challenge (Aptitude, Analytical Reasoning & Logical Reasoning) powered by **Node.js, Express, and MongoDB Atlas**.
 
 ---
 

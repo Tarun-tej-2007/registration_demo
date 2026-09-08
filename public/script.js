@@ -1,5 +1,5 @@
 /*
-  BRAINSTORM registration frontend.
+  TECH APTI EXPLORE 2.0 registration frontend.
   Directly connected to Node.js/Express + MongoDB Atlas Backend.
 */
 

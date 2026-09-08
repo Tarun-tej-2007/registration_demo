@@ -70,7 +70,7 @@ if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
   connectDB().then(() => {
     app.listen(PORT, () => {
       console.log(`===================================================`);
-      console.log(`🚀 BRAINSTORM Server running at http://localhost:${PORT}`);
+      console.log(`🚀 TECH APTI EXPLORE 2.0 Server running at http://localhost:${PORT}`);
       console.log(`🌐 Landing & Registration: http://localhost:${PORT}`);
       console.log(`🔍 Ticket & Status Portal: http://localhost:${PORT}/status.html`);
       console.log(`📊 Admin Dashboard:       http://localhost:${PORT}/admin.html`);

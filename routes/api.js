@@ -368,7 +368,7 @@ router.get('/export', async (req, res) => {
     const csvContent = [headers.join(','), ...rows].join('\r\n');
 
     res.setHeader('Content-Type', 'text/csv; charset=utf-8');
-    res.setHeader('Content-Disposition', 'attachment; filename="brainstorm_registrations_' + Date.now() + '.csv"');
+    res.setHeader('Content-Disposition', 'attachment; filename="tech_apti_explore_registrations_' + Date.now() + '.csv"');
     return res.send(csvContent);
   } catch (error) {
     console.error('Export Error:', error);

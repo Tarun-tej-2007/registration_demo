@@ -1,13 +1,13 @@
 {
-  "name": "brainstorm-registration-website",
+  "name": "tech-apti-explore-registration-website",
   "version": "1.0.0",
-  "description": "Full-stack event registration portal for CLAIM Group 3 BRAINSTORM with MongoDB Atlas backend",
+  "description": "Full-stack event registration portal for CLAIM Group 3 TECH APTI EXPLORE 2.0 with MongoDB Atlas backend",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "dev": "node --watch server.js"
   },
-  "keywords": ["registration", "mongodb", "express", "brainstorm"],
+  "keywords": ["registration", "mongodb", "express", "tech-apti-explore"],
   "author": "",
   "license": "ISC",
   "dependencies": {
