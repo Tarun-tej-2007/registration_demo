@@ -138,32 +138,39 @@
 
           <div class="form-row">
             <label>
-              Full Name *
-              <input name="fullName" type="text" placeholder="Enter your full name" required />
+              Registration Number / Roll No. *
+              <input name="registrationNumber" type="text" placeholder="e.g. 9922004123 or Roll No." required />
             </label>
             <label>
-              Email Address *
-              <input name="email" type="email" placeholder="you@example.com" required />
+              Full Name *
+              <input name="fullName" type="text" placeholder="Enter your full name" required />
             </label>
           </div>
 
           <div class="form-row">
+            <label>
+              Email Address *
+              <input name="email" type="email" placeholder="you@example.com" required />
+            </label>
             <label>
               Mobile Number (10 Digits) *
               <input name="phone" type="tel" inputmode="numeric" maxlength="10"
                      pattern="[0-9]{10}" placeholder="e.g. 9876543210" required />
             </label>
-            <label>
-              College / Institution *
-              <input name="college" type="text" placeholder="e.g. Kalasalingam Academy" required />
-            </label>
           </div>
 
           <div class="form-row">
             <label>
+              College / Institution *
+              <input name="college" type="text" placeholder="e.g. Kalasalingam Academy" required />
+            </label>
+            <label>
               Department *
               <input name="department" type="text" placeholder="e.g. CSE, IT, ECE" required />
             </label>
+          </div>
+
+          <div class="form-row">
             <label>
               Year of Study *
               <select name="year" required>

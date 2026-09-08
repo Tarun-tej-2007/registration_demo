@@ -22,12 +22,30 @@ async function generateUniqueRegistrationId() {
 // @desc    Create a new participant registration
 router.post('/register', async (req, res) => {
   try {
-    const { fullName, email, phone, college, department, year, slot, paymentRef } = req.body;
+    const { registrationNumber, fullName, email, phone, college, department, year, slot, paymentRef } = req.body;
 
     if (!fullName || !email || !phone || !college || !department || !year || !slot || !paymentRef) {
       return res.status(400).json({
         success: false,
         message: 'All fields are required. Please fill in every detail.'
+      });
+    }
+
+    const cleanRegNo = (registrationNumber || '').trim().toUpperCase();
+    if (!cleanRegNo) {
+      return res.status(400).json({
+        success: false,
+        message: 'Registration Number is required.'
+      });
+    }
+
+    // Check duplicate registration number
+    const existingRegNo = await Registration.findOne({ registrationId: cleanRegNo });
+    if (existingRegNo) {
+      return res.status(409).json({
+        success: false,
+        message: `Registration Number "${cleanRegNo}" is already registered (${existingRegNo.fullName}).`,
+        existingId: existingRegNo.registrationId
       });
     }
 
@@ -55,10 +73,11 @@ router.post('/register', async (req, res) => {
       });
     }
 
-    const registrationId = await generateUniqueRegistrationId();
+    const registrationId = cleanRegNo;
 
     const newRegistration = new Registration({
       registrationId,
+      registrationNumber: cleanRegNo,
       fullName: fullName.trim(),
       email: cleanEmail,
       phone: cleanPhone,

@@ -10,6 +10,11 @@ const registrationSchema = new mongoose.Schema(
       uppercase: true,
       index: true
     },
+    registrationNumber: {
+      type: String,
+      trim: true,
+      uppercase: true
+    },
     fullName: {
       type: String,
       required: [true, 'Full name is required'],
