@@ -97,8 +97,8 @@ function validateStep1() {
     return false;
   }
 
-  if (!email || !/^\S+@\S+\.\S+$/.test(email)) {
-    showAlert("Please enter a valid Email Address.", "error");
+  if (!email || !/^[a-zA-Z0-9._%+-]+@klu\.ac\.in$/i.test(email)) {
+    showAlert("Please enter your official university email ending with @klu.ac.in (e.g. 9922004123@klu.ac.in).", "error");
     emailInput?.focus();
     return false;
   }

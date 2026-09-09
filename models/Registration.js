@@ -25,7 +25,7 @@ const registrationSchema = new mongoose.Schema(
       required: [true, 'Email is required'],
       trim: true,
       lowercase: true,
-      match: [/^\S+@\S+\.\S+$/, 'Please provide a valid email address']
+      match: [/^[a-zA-Z0-9._%+-]+@klu\.ac\.in$/i, 'Email must be an official university email ending with @klu.ac.in']
     },
     phone: {
       type: String,

@@ -57,6 +57,13 @@ router.post('/register', async (req, res) => {
     }
 
     const cleanEmail = email.trim().toLowerCase();
+    if (!cleanEmail.endsWith('@klu.ac.in') || !/^[a-zA-Z0-9._%+-]+@klu\.ac\.in$/.test(cleanEmail)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Only official institutional emails ending with @klu.ac.in (e.g. 9922004123@klu.ac.in) are allowed.'
+      });
+    }
+
     const cleanPhone = phone.trim();
     const cleanPaymentRef = paymentRef.trim();
 
