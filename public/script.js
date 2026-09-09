@@ -404,3 +404,26 @@ newRegistrationBtn?.addEventListener("click", () => {
   form.closest(".register-section").hidden = false;
   document.getElementById("register").scrollIntoView({ behavior: "smooth" });
 });
+
+// Check capacity on page load
+async function checkCapacity() {
+  try {
+    const res = await fetch('/api/stats');
+    const data = await res.json();
+    if (data.success && data.stats && data.stats.isFull) {
+      showAlert(`⚠️ Registration Closed: All ${data.stats.maxLimit || 75} seats have been filled.`, "error");
+      if (goToStep2Btn) {
+        goToStep2Btn.disabled = true;
+        goToStep2Btn.innerHTML = `<span>Registration Closed (${data.stats.total}/${data.stats.maxLimit || 75} Full)</span>`;
+      }
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = "<span>Registration Closed</span>";
+      }
+    }
+  } catch (e) {
+    // Non-blocking
+  }
+}
+
+document.addEventListener("DOMContentLoaded", checkCapacity);

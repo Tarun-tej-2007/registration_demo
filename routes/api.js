@@ -38,6 +38,15 @@ router.post('/register', async (req, res) => {
       });
     }
 
+    const MAX_REGISTRATIONS = 75;
+    const currentTotal = await Registration.countDocuments();
+    if (currentTotal >= MAX_REGISTRATIONS) {
+      return res.status(403).json({
+        success: false,
+        message: `Registration Closed: All ${MAX_REGISTRATIONS} seats have been filled.`
+      });
+    }
+
     const cleanRegNo = (registrationNumber || '').trim().toUpperCase();
     if (!cleanRegNo) {
       return res.status(400).json({
@@ -318,13 +327,19 @@ router.get('/registration/:id', async (req, res) => {
 // @desc    Get event stats summary
 router.get('/stats', async (req, res) => {
   try {
+    const MAX_REGISTRATIONS = 75;
     const total = await Registration.countDocuments();
     const attended = await Registration.countDocuments({ status: 'attended' });
+    const remainingSeats = Math.max(0, MAX_REGISTRATIONS - total);
+    const isFull = total >= MAX_REGISTRATIONS;
 
     return res.json({
       success: true,
       stats: {
         total,
+        maxLimit: MAX_REGISTRATIONS,
+        remainingSeats,
+        isFull,
         attended,
         attendancePercentage: total > 0 ? Math.round((attended / total) * 100) : 0,
         totalRevenue: total * 100,
