@@ -38,7 +38,7 @@ router.post('/register', async (req, res) => {
       });
     }
 
-    const MAX_REGISTRATIONS = 75;
+    const MAX_REGISTRATIONS = 140;
     const currentTotal = await Registration.countDocuments();
     if (currentTotal >= MAX_REGISTRATIONS) {
       return res.status(403).json({
@@ -327,7 +327,7 @@ router.get('/registration/:id', async (req, res) => {
 // @desc    Get event stats summary
 router.get('/stats', async (req, res) => {
   try {
-    const MAX_REGISTRATIONS = 75;
+    const MAX_REGISTRATIONS = 140;
     const total = await Registration.countDocuments();
     const attended = await Registration.countDocuments({ status: 'attended' });
     const remainingSeats = Math.max(0, MAX_REGISTRATIONS - total);

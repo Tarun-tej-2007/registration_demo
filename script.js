@@ -411,10 +411,10 @@ async function checkCapacity() {
     const res = await fetch('/api/stats');
     const data = await res.json();
     if (data.success && data.stats && data.stats.isFull) {
-      showAlert(`⚠️ Registration Closed: All ${data.stats.maxLimit || 75} seats have been filled.`, "error");
+      showAlert(`⚠️ Registration Closed: All ${data.stats.maxLimit || 140} seats have been filled.`, "error");
       if (goToStep2Btn) {
         goToStep2Btn.disabled = true;
-        goToStep2Btn.innerHTML = `<span>Registration Closed (${data.stats.total}/${data.stats.maxLimit || 75} Full)</span>`;
+        goToStep2Btn.innerHTML = `<span>Registration Closed (${data.stats.total}/${data.stats.maxLimit || 140} Full)</span>`;
       }
       if (submitBtn) {
         submitBtn.disabled = true;

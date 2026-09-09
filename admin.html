@@ -97,7 +97,7 @@
         <div class="stat-card">
           <span class="stat-label">TOTAL REGISTERED</span>
           <div class="stat-value" id="statTotal">--</div>
-          <small class="stat-foot" id="statTotalFoot">Capacity: 75 Seats</small>
+          <small class="stat-foot" id="statTotalFoot">Capacity: 140 Seats</small>
         </div>
         <div class="stat-card">
           <span class="stat-label">ATTENDED (CHECKED IN)</span>
@@ -323,10 +323,10 @@
         const data = await res.json();
         if (data.success && data.stats) {
           const s = data.stats;
-          statTotal.textContent = `${s.total} / ${s.maxLimit || 75}`;
+          statTotal.textContent = `${s.total} / ${s.maxLimit || 140}`;
           const totalFoot = document.getElementById('statTotalFoot');
           if (totalFoot) {
-            totalFoot.textContent = s.isFull ? '⚠️ CAPACITY FULL (75/75)' : `${s.remainingSeats} Seats Available`;
+            totalFoot.textContent = s.isFull ? `⚠️ CAPACITY FULL (${s.maxLimit || 140}/${s.maxLimit || 140})` : `${s.remainingSeats} Seats Available`;
           }
           statAttended.textContent = s.attended;
           statTurnoutPct.textContent = `${s.attendancePercentage}% Turnout`;
