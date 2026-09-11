@@ -125,6 +125,11 @@ function validateStep1() {
 }
 
 goToStep2Btn?.addEventListener("click", () => {
+  if (!isRegistrationOpen) {
+    showAlert("⏳ Registrations will open today at 6:00 PM IST. Please wait for the countdown to complete.", "error");
+    return;
+  }
+
   if (!validateStep1()) return;
 
   // Move to Step 2
@@ -296,6 +301,11 @@ form.addEventListener("submit", async (event) => {
   event.preventDefault();
   clearAlert();
 
+  if (!isRegistrationOpen) {
+    showAlert("⏳ Registrations will open today at 6:00 PM IST. Form submissions are currently queued.", "error");
+    return;
+  }
+
   // Validate Step 1
   if (!validateStep1()) {
     backToStep1Btn?.click();
@@ -409,7 +419,89 @@ newRegistrationBtn?.addEventListener("click", () => {
 });
 
 // -------------------------------------------------------------
-// Dynamic Live Remaining Seats Counter
+// Live Countdown Timer (Opens at 6:00 PM Today - 11 Sept 2026)
+// -------------------------------------------------------------
+const DEFAULT_REGISTRATION_START_TIME = new Date('2026-09-11T18:00:00+05:30').getTime();
+let targetStartTime = DEFAULT_REGISTRATION_START_TIME;
+let isRegistrationOpen = Date.now() >= targetStartTime;
+let countdownInterval = null;
+
+const heroCountdownCard = document.getElementById("heroCountdownCard");
+const registrationLockedBox = document.getElementById("registrationLockedBox");
+const cdHours = document.getElementById("cdHours");
+const cdMinutes = document.getElementById("cdMinutes");
+const cdSeconds = document.getElementById("cdSeconds");
+const lockBoxTimerText = document.getElementById("lockBoxTimerText");
+const heroCountdownNote = document.getElementById("heroCountdownNote");
+
+function updateCountdownUI() {
+  const now = Date.now();
+  const diff = targetStartTime - now;
+
+  if (diff <= 0) {
+    // Registrations are NOW OPEN!
+    isRegistrationOpen = true;
+    if (countdownInterval) {
+      clearInterval(countdownInterval);
+      countdownInterval = null;
+    }
+
+    if (heroCountdownCard) {
+      heroCountdownCard.style.borderColor = "var(--green)";
+      heroCountdownCard.innerHTML = `
+        <div class="countdown-tag-row">
+          <span class="cd-pulse-badge" style="color:var(--green);">⚡ REGISTRATIONS ARE NOW LIVE!</span>
+          <span class="cd-time-target" style="background:var(--green); color:var(--ink); font-weight:800;">OPEN NOW</span>
+        </div>
+        <p class="cd-note" style="color:#ffffff; font-size:13px; font-weight:700;">
+          All 140 seats are open for registration on a first-come, first-served basis. Complete your registration below!
+        </p>
+      `;
+    }
+
+    if (registrationLockedBox) {
+      registrationLockedBox.hidden = true;
+    }
+
+    if (goToStep2Btn && !goToStep2Btn.disabled) {
+      goToStep2Btn.innerHTML = `<span>Proceed to Payment Step 2</span> <span>→</span>`;
+    }
+
+    return;
+  }
+
+  // Still locked
+  isRegistrationOpen = false;
+
+  const totalSecs = Math.floor(diff / 1000);
+  const hours = Math.floor(totalSecs / 3600);
+  const mins = Math.floor((totalSecs % 3600) / 60);
+  const secs = totalSecs % 60;
+
+  const pad = (n) => String(n).padStart(2, '0');
+
+  if (cdHours) cdHours.textContent = pad(hours);
+  if (cdMinutes) cdMinutes.textContent = pad(mins);
+  if (cdSeconds) cdSeconds.textContent = pad(secs);
+
+  if (lockBoxTimerText) {
+    lockBoxTimerText.textContent = `${hours}h ${mins}m ${secs}s`;
+  }
+}
+
+function initCountdown(startTime) {
+  if (startTime) {
+    targetStartTime = Number(startTime);
+  }
+  updateCountdownUI();
+  if (Date.now() < targetStartTime) {
+    if (countdownInterval) clearInterval(countdownInterval);
+    countdownInterval = setInterval(updateCountdownUI, 1000);
+  }
+}
+
+// -------------------------------------------------------------
+// Dynamic Live Remaining Seats Counter & Sync with Server Start Time
 // -------------------------------------------------------------
 async function updateSeatsCount() {
   try {
@@ -418,7 +510,12 @@ async function updateSeatsCount() {
     const data = await res.json();
     if (!data.success || !data.stats) return;
 
-    const { total, maxLimit = 140, remainingSeats, isFull } = data.stats;
+    const { total, maxLimit = 140, remainingSeats, isFull, registrationStartTime, hasStarted } = data.stats;
+
+    // Sync with server's configured start time
+    if (registrationStartTime) {
+      initCountdown(registrationStartTime);
+    }
 
     // Elements
     const heroSeatsLeft = document.getElementById("heroSeatsLeft");
@@ -444,6 +541,8 @@ async function updateSeatsCount() {
       if (isFull) {
         liveSeatsPillText.innerHTML = `⚠️ <strong>Registrations Closed</strong> — All ${maxLimit} seats filled!`;
         if (liveSeatsPill) liveSeatsPill.classList.add("full");
+      } else if (!hasStarted && !isRegistrationOpen) {
+        liveSeatsPillText.innerHTML = `⏳ <strong>Registrations Open at 6:00 PM Today</strong> (${maxLimit} Total Seats)`;
       } else {
         liveSeatsPillText.innerHTML = `🔥 Only <strong>${remainingSeats} seats left</strong> out of ${maxLimit} (Filling Fast!)`;
       }
@@ -469,6 +568,8 @@ async function updateSeatsCount() {
       if (isFull) {
         seatMeterStatus.textContent = `All ${maxLimit} seats are booked!`;
         seatMeterStatus.style.color = "var(--red)";
+      } else if (!hasStarted && !isRegistrationOpen) {
+        seatMeterStatus.textContent = `Opening at 6:00 PM IST today. ${maxLimit} seats available.`;
       } else if (remainingSeats <= 20) {
         seatMeterStatus.textContent = `Hurry! Only ${remainingSeats} slots remaining.`;
       } else {
@@ -494,6 +595,10 @@ async function updateSeatsCount() {
 }
 
 // Initial fetch on page load
-document.addEventListener("DOMContentLoaded", updateSeatsCount);
-// Also trigger immediately in case DOM is already ready
+document.addEventListener("DOMContentLoaded", () => {
+  initCountdown();
+  updateSeatsCount();
+});
+// Immediate trigger
+initCountdown();
 updateSeatsCount();

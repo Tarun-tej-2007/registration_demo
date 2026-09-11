@@ -37,8 +37,33 @@
           </p>
 
           <div class="hero-actions">
-            <a class="primary-btn" href="#register">Secure My Seat <span>→</span></a>
+            <a class="primary-btn" id="heroRegisterBtn" href="#register">Secure My Seat <span>→</span></a>
             <a class="text-btn" href="#details">View Event Details</a>
+          </div>
+
+          <!-- Live Countdown Banner for 6:00 PM Launch -->
+          <div class="countdown-hero-card" id="heroCountdownCard">
+            <div class="countdown-tag-row">
+              <span class="cd-pulse-badge">⏳ REGISTRATIONS OPEN TODAY</span>
+              <span class="cd-time-target">6:00 PM IST (11 Sept)</span>
+            </div>
+            <div class="countdown-display-grid">
+              <div class="cd-box">
+                <span class="cd-number" id="cdHours">00</span>
+                <span class="cd-label">HOURS</span>
+              </div>
+              <div class="cd-sep">:</div>
+              <div class="cd-box">
+                <span class="cd-number" id="cdMinutes">00</span>
+                <span class="cd-label">MINUTES</span>
+              </div>
+              <div class="cd-sep">:</div>
+              <div class="cd-box">
+                <span class="cd-number" id="cdSeconds">00</span>
+                <span class="cd-label">SECONDS</span>
+              </div>
+            </div>
+            <p class="cd-note" id="heroCountdownNote">Registration form unlocks automatically at 6:00 PM. Limited to 140 seats!</p>
           </div>
 
           <!-- Live Seat Availability Pill -->
@@ -157,6 +182,15 @@
 
         <form id="registrationForm" class="registration-form" novalidate>
           <div id="formAlert" class="form-alert" hidden></div>
+
+          <!-- Countdown Locked Notice inside Form -->
+          <div class="registration-locked-box" id="registrationLockedBox">
+            <div class="lock-icon-circle">🔒</div>
+            <div class="lock-details">
+              <h4>Registrations Open Today at 6:00 PM IST</h4>
+              <p>Form submissions will automatically unlock in <strong id="lockBoxTimerText">--h --m --s</strong>. Please keep your roll number and payment UPI ready!</p>
+            </div>
+          </div>
 
           <!-- Step Progress Indicator -->
           <div class="step-progress-wrapper">

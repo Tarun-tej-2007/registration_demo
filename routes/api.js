@@ -18,10 +18,23 @@ async function generateUniqueRegistrationId() {
   return regId;
 }
 
+// Target start time: 6:00 PM IST today (11 Sept 2026)
+const REGISTRATION_START_TIME = process.env.REGISTRATION_START_TIME
+  ? new Date(process.env.REGISTRATION_START_TIME).getTime()
+  : new Date('2026-09-11T18:00:00+05:30').getTime();
+
 // @route   POST /api/register
 // @desc    Create a new participant registration
 router.post('/register', async (req, res) => {
   try {
+    const now = Date.now();
+    if (now < REGISTRATION_START_TIME) {
+      return res.status(403).json({
+        success: false,
+        message: 'Registrations are currently closed. Registrations will open today at 6:00 PM IST.'
+      });
+    }
+
     const { registrationNumber, fullName, email, phone, department, year, paymentRef, paymentScreenshot } = req.body;
 
     if (!fullName || !email || !phone || !department || !year || !paymentRef) {
@@ -332,6 +345,9 @@ router.get('/stats', async (req, res) => {
     const attended = await Registration.countDocuments({ status: 'attended' });
     const remainingSeats = Math.max(0, MAX_REGISTRATIONS - total);
     const isFull = total >= MAX_REGISTRATIONS;
+    const now = Date.now();
+    const hasStarted = now >= REGISTRATION_START_TIME;
+    const timeUntilStart = Math.max(0, REGISTRATION_START_TIME - now);
 
     return res.json({
       success: true,
@@ -343,7 +359,10 @@ router.get('/stats', async (req, res) => {
         attended,
         attendancePercentage: total > 0 ? Math.round((attended / total) * 100) : 0,
         totalRevenue: total * 100,
-        currency: '₹'
+        currency: '₹',
+        registrationStartTime: REGISTRATION_START_TIME,
+        hasStarted,
+        timeUntilStart
       }
     });
   } catch (error) {
