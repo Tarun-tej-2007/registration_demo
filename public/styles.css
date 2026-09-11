@@ -19,6 +19,7 @@
 }
 
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 html { scroll-behavior: smooth; }
 body {
   margin: 0;
@@ -862,6 +863,9 @@ footer span { margin-top: 5px; color: #8f9b9b; }
   color: var(--muted);
   margin: 0;
 }
+.upload-dropzone[hidden] {
+  display: none !important;
+}
 .file-preview-card {
   background: white;
   border: 2px solid var(--ink);
@@ -872,6 +876,9 @@ footer span { margin-top: 5px; color: #8f9b9b; }
   gap: 14px;
   margin-top: 10px;
   box-shadow: 4px 4px 0 rgba(37,103,199,.2);
+}
+.file-preview-card[hidden] {
+  display: none !important;
 }
 .preview-thumb-img {
   width: 54px;
