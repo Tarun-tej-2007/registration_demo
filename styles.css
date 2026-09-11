@@ -1256,6 +1256,80 @@ footer span { margin-top: 5px; color: #8f9b9b; }
   }
 }
 
+/* WhatsApp Group Card in Success Panel & Ticket Pass */
+.whatsapp-group-card {
+  background: #f0fdf4;
+  border: 2px solid #22c55e;
+  border-radius: 18px;
+  padding: 20px 22px;
+  margin: 22px 0;
+  text-align: center;
+  box-shadow: 0 10px 25px rgba(34, 197, 94, 0.12), 4px 4px 0 #15803d;
+}
+.wa-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  text-align: left;
+}
+.wa-icon-bubble {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #25d366;
+  color: white;
+  display: grid;
+  place-items: center;
+  font-size: 22px;
+  box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);
+  flex-shrink: 0;
+}
+.wa-header h4 {
+  margin: 0;
+  font-size: 16px;
+  color: #14532d;
+  font-family: Orbitron, sans-serif;
+}
+.wa-group-name {
+  display: block;
+  font-size: 13px;
+  font-weight: 800;
+  color: #166534;
+}
+.wa-description {
+  font-size: 12.5px;
+  color: #166534;
+  line-height: 1.5;
+  margin: 0 0 16px;
+  text-align: center;
+}
+.wa-qr-box {
+  background: white;
+  border: 2px solid #86efac;
+  border-radius: 14px;
+  padding: 14px;
+  display: inline-block;
+  margin: 0 auto 8px;
+  box-shadow: 0 4px 15px rgba(0,0,0,.06);
+}
+.wa-qr-img {
+  max-width: 220px;
+  width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+  border-radius: 8px;
+}
+.wa-qr-badge {
+  font: 800 10px Orbitron, sans-serif;
+  letter-spacing: 0.8px;
+  color: #15803d;
+  margin-top: 8px;
+  display: block;
+}
+
 /* Print Rules */
 @media print {
   body { background: white !important; color: black !important; }
