@@ -161,7 +161,7 @@ backToStep1Btn?.addEventListener("click", () => {
 // Copy UPI ID Action
 // -------------------------------------------------------------
 copyUpiBtn?.addEventListener("click", async () => {
-  const upiId = upiIdText ? upiIdText.textContent.trim() : "taruntej947@okhdfcbank";
+  const upiId = upiIdText ? upiIdText.textContent.trim() : "69097701@ubin";
   try {
     if (navigator.clipboard) {
       await navigator.clipboard.writeText(upiId);
