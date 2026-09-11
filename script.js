@@ -86,7 +86,7 @@ function validateStep1() {
   const year = (yearInput?.value || "").trim();
 
   if (!regNo) {
-    showAlert("Please enter your Registration Number / Roll No.", "error");
+    showAlert("Please enter your Registration Number.", "error");
     regNoInput?.focus();
     return false;
   }
