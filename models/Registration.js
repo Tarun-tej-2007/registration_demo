@@ -50,7 +50,7 @@ const registrationSchema = new mongoose.Schema(
     },
     paymentScreenshot: {
       type: String,
-      required: [true, 'Payment screenshot is required']
+      default: ''
     },
     fee: {
       type: Number,

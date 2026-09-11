@@ -147,7 +147,7 @@
                 <div class="step-bubble">2</div>
                 <div class="step-text">
                   <span class="step-tag">Step 2</span>
-                  <span class="step-title">Payment &amp; Proof</span>
+                  <span class="step-title">Payment &amp; UTR</span>
                 </div>
               </div>
             </div>
@@ -245,11 +245,11 @@
               </div>
             </div>
 
-            <!-- Payment Reference UTR Input -->
+            <!-- Payment UTR Input (12 Digits Only) -->
             <label>
-              Payment UTR / 12-Digit Transaction Reference *
-              <input name="paymentRef" id="paymentRef" type="text" placeholder="e.g. 425123984521 or UPI Transaction ID" required />
-              <small class="field-note">Copy from payment receipt in GPay / PhonePe / Paytm / Bank</small>
+              Payment UTR Number (12 Digits) *
+              <input name="paymentRef" id="paymentRef" type="text" placeholder="e.g. 425123984521 (12-digit UTR)" required />
+              <small class="field-note">Enter the 12-digit UTR number from your payment receipt in GPay / PhonePe / Paytm / Bank</small>
             </label>
 
             <!-- Mandatory Payment Screenshot Upload Dropzone -->
@@ -261,7 +261,7 @@
               <div class="dropzone-inner" id="dropzoneEmpty">
                 <div class="upload-icon-circle">📷</div>
                 <p class="upload-primary-text">Click or Drag &amp; Drop Payment Screenshot Here</p>
-                <p class="upload-sub-text">PNG, JPG, JPEG, WEBP • Max 5MB (UTR/Transaction must be visible)</p>
+                <p class="upload-sub-text">PNG, JPG, JPEG, WEBP • Max 5MB (UTR number must be clearly visible)</p>
               </div>
             </div>
 
@@ -278,7 +278,7 @@
             <!-- Consent Checkbox -->
             <label class="consent" style="margin-top: 18px;">
               <input name="consent" id="consentCheck" type="checkbox" required />
-              <span>I confirm that I have paid ₹100 and attached the genuine transaction screenshot.</span>
+              <span>I confirm that I have paid ₹100, entered the correct UTR number, and attached the payment screenshot.</span>
             </label>
 
             <div class="step-actions-row">

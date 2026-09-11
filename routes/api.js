@@ -34,7 +34,7 @@ router.post('/register', async (req, res) => {
     if (!paymentScreenshot || !paymentScreenshot.trim()) {
       return res.status(400).json({
         success: false,
-        message: 'Payment screenshot proof is mandatory. Please upload your payment confirmation screenshot.'
+        message: 'Payment screenshot upload is mandatory. Please attach your payment receipt screenshot.'
       });
     }
 
@@ -81,7 +81,7 @@ router.post('/register', async (req, res) => {
     if (existingPayment) {
       return res.status(409).json({
         success: false,
-        message: 'This Payment UTR / Reference ID has already been registered.',
+        message: 'This 12-Digit Payment UTR Number has already been registered.',
         existingId: existingPayment.registrationId
       });
     }
@@ -107,7 +107,7 @@ router.post('/register', async (req, res) => {
       department: department.trim(),
       year: year.trim(),
       paymentRef: cleanPaymentRef,
-      paymentScreenshot: paymentScreenshot.trim(),
+      paymentScreenshot: (paymentScreenshot || '').trim(),
       fee: 100,
       status: 'confirmed'
     });

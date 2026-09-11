@@ -305,19 +305,19 @@ form.addEventListener("submit", async (event) => {
   // Validate Step 2
   const paymentRef = (paymentRefInput?.value || "").trim();
   if (!paymentRef) {
-    showAlert("Please enter your 12-Digit Payment UTR / Transaction Reference ID.", "error");
+    showAlert("Please enter your 12-Digit Payment UTR Number.", "error");
     paymentRefInput?.focus();
     return;
   }
 
   if (!currentScreenshotBase64) {
-    showAlert("Payment screenshot upload is mandatory. Please attach your payment confirmation screenshot.", "error");
+    showAlert("Payment screenshot upload is mandatory. Please attach your payment receipt screenshot.", "error");
     screenshotDropzone?.scrollIntoView({ behavior: "smooth", block: "center" });
     return;
   }
 
   if (!consentCheck?.checked) {
-    showAlert("Please confirm that you have paid ₹100 and attached the genuine transaction screenshot.", "error");
+    showAlert("Please confirm that you have paid ₹100, entered the correct UTR number, and attached the payment screenshot.", "error");
     consentCheck?.focus();
     return;
   }
