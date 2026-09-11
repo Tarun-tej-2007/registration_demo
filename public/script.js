@@ -375,6 +375,9 @@ form.addEventListener("submit", async (event) => {
     successPanel.hidden = false;
     successPanel.scrollIntoView({ behavior: "smooth", block: "start" });
 
+    // Refresh remaining seats live
+    updateSeatsCount();
+
   } catch (error) {
     console.error("Submission Error:", error);
     showAlert("Could not connect to backend server. Make sure the Node.js server is running on http://localhost:5000.", "error");
@@ -405,25 +408,92 @@ newRegistrationBtn?.addEventListener("click", () => {
   document.getElementById("register").scrollIntoView({ behavior: "smooth" });
 });
 
-// Check capacity on page load
-async function checkCapacity() {
+// -------------------------------------------------------------
+// Dynamic Live Remaining Seats Counter
+// -------------------------------------------------------------
+async function updateSeatsCount() {
   try {
     const res = await fetch('/api/stats');
+    if (!res.ok) return;
     const data = await res.json();
-    if (data.success && data.stats && data.stats.isFull) {
-      showAlert(`⚠️ Registration Closed: All ${data.stats.maxLimit || 140} seats have been filled.`, "error");
+    if (!data.success || !data.stats) return;
+
+    const { total, maxLimit = 140, remainingSeats, isFull } = data.stats;
+
+    // Elements
+    const heroSeatsLeft = document.getElementById("heroSeatsLeft");
+    const liveSeatsPill = document.getElementById("liveSeatsPill");
+    const liveSeatsPillText = document.getElementById("liveSeatsPillText");
+    const seatCountText = document.getElementById("seatCountText");
+    const seatMeterFill = document.getElementById("seatMeterFill");
+    const seatMeterStatus = document.getElementById("seatMeterStatus");
+    const seatPercentFilled = document.getElementById("seatPercentFilled");
+
+    const percentFilled = Math.min(100, Math.round((total / maxLimit) * 100));
+
+    // Hero quick stats
+    if (heroSeatsLeft) {
+      heroSeatsLeft.textContent = isFull ? "FULL" : `${remainingSeats} / ${maxLimit}`;
+      if (remainingSeats <= 20) {
+        heroSeatsLeft.style.color = "var(--red)";
+      }
+    }
+
+    // Live Pill Badge
+    if (liveSeatsPillText) {
+      if (isFull) {
+        liveSeatsPillText.innerHTML = `⚠️ <strong>Registrations Closed</strong> — All ${maxLimit} seats filled!`;
+        if (liveSeatsPill) liveSeatsPill.classList.add("full");
+      } else {
+        liveSeatsPillText.innerHTML = `🔥 Only <strong>${remainingSeats} seats left</strong> out of ${maxLimit} (Filling Fast!)`;
+      }
+    }
+
+    // Form progress card
+    if (seatCountText) {
+      seatCountText.textContent = isFull ? "0 Left (Full)" : `${remainingSeats} Left`;
+    }
+
+    if (seatMeterFill) {
+      seatMeterFill.style.width = `${percentFilled}%`;
+      if (percentFilled >= 85) {
+        seatMeterFill.style.background = "linear-gradient(90deg, #f59e0b, #e63946)";
+      }
+    }
+
+    if (seatPercentFilled) {
+      seatPercentFilled.textContent = `${total} Registered (${percentFilled}%)`;
+    }
+
+    if (seatMeterStatus) {
+      if (isFull) {
+        seatMeterStatus.textContent = `All ${maxLimit} seats are booked!`;
+        seatMeterStatus.style.color = "var(--red)";
+      } else if (remainingSeats <= 20) {
+        seatMeterStatus.textContent = `Hurry! Only ${remainingSeats} slots remaining.`;
+      } else {
+        seatMeterStatus.textContent = `${remainingSeats} out of ${maxLimit} seats available.`;
+      }
+    }
+
+    // If registrations are completely full
+    if (isFull) {
+      showAlert(`⚠️ Registration Closed: All ${maxLimit} seats have been filled.`, "error");
       if (goToStep2Btn) {
         goToStep2Btn.disabled = true;
-        goToStep2Btn.innerHTML = `<span>Registration Closed (${data.stats.total}/${data.stats.maxLimit || 140} Full)</span>`;
+        goToStep2Btn.innerHTML = `<span>Registration Closed (${total}/${maxLimit} Full)</span>`;
       }
       if (submitBtn) {
         submitBtn.disabled = true;
         submitBtn.innerHTML = "<span>Registration Closed</span>";
       }
     }
-  } catch (e) {
-    // Non-blocking
+  } catch (err) {
+    console.warn("Could not fetch seat statistics:", err);
   }
 }
 
-document.addEventListener("DOMContentLoaded", checkCapacity);
+// Initial fetch on page load
+document.addEventListener("DOMContentLoaded", updateSeatsCount);
+// Also trigger immediately in case DOM is already ready
+updateSeatsCount();

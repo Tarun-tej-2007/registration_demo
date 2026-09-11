@@ -41,6 +41,12 @@
             <a class="text-btn" href="#details">View Event Details</a>
           </div>
 
+          <!-- Live Seat Availability Pill -->
+          <div class="live-seats-pill" id="liveSeatsPill">
+            <span class="live-dot"></span>
+            <span id="liveSeatsPillText">Only <strong>-- seats left</strong> out of 140 (Filling Fast!)</span>
+          </div>
+
           <div class="quick-stats">
             <div>
               <small>DATES</small>
@@ -53,6 +59,10 @@
             <div>
               <small>FEE</small>
               <b>₹100</b>
+            </div>
+            <div class="seats-stat-box">
+              <small>SEATS LEFT</small>
+              <b id="heroSeatsLeft" class="seats-highlight">-- / 140</b>
             </div>
           </div>
         </div>
@@ -111,6 +121,22 @@
         <div class="form-intro">
           <p class="eyebrow">REGISTRATION</p>
           <h2>Claim your spot.</h2>
+
+          <!-- Dynamic Live Seats Progress Card -->
+          <div class="seat-progress-card" id="seatProgressCard">
+            <div class="seat-card-header">
+              <span class="seat-label">🔥 Registrations Left</span>
+              <strong class="seat-count" id="seatCountText">-- Left</strong>
+            </div>
+            <div class="seat-meter-track">
+              <div class="seat-meter-fill" id="seatMeterFill" style="width: 0%;"></div>
+            </div>
+            <div class="seat-card-footer">
+              <span id="seatMeterStatus">Fetching live availability...</span>
+              <span id="seatPercentFilled">0 Registered</span>
+            </div>
+          </div>
+
           <p>
             Fill in your details below to register for all 3 days (12th &amp; 13th Sept Online Sessions + 20th Sept Assessment). Your registration number will be used to generate your official ticket pass and gate barcode.
           </p>
